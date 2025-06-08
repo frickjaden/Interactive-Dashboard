@@ -360,4 +360,90 @@ if uploaded_file is not None:
                 st.markdown("---")
 
                 # --- Row 3: Top 5 Locations & Geographical Engagement ---
-                st.
+                st.subheader("3.5. Top 5 Locations by Engagement")
+                top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).sort_values(ascending=True).reset_index()
+                fig_locations = px.bar(top_locations, x='engagements', y='location', orientation='h',
+                                      title='**Top 5 Lokasi Berdasarkan Total Engagement**',
+                                      color='location',
+                                      color_discrete_sequence=px.colors.qualitative.Dark24)
+                fig_locations.update_xaxes(title_text='Total Engagements')
+                fig_locations.update_yaxes(title_text='Lokasi', categoryarray=top_locations['location'].tolist(), categoryorder="array")
+                fig_locations.update_layout(title_x=0.5)
+                st.plotly_chart(fig_locations, use_container_width=True)
+                st.markdown("#### Insight:")
+                for insight in get_insights("Top 5 Locations", df_filtered):
+                    st.markdown(f"- {insight}")
+
+                # --- Geographical Map (Experimental - Requires valid location data) ---
+                st.subheader("3.6. Peta Engagement Geografis (Eksperimental)")
+                st.info("Peta ini akan bekerja paling baik jika kolom 'Location' Anda berisi nama kota atau negara yang dapat dikenali oleh Plotly.")
+                try:
+                    location_engagements_map = df_filtered.groupby('location')['engagements'].sum().reset_index()
+                    location_engagements_map.columns = ['location', 'total_engagements']
+                    # Use px.choropleth or px.scatter_geo. px.scatter_geo is more flexible for varied location data.
+                    fig_geo = px.scatter_geo(
+                        location_engagements_map,
+                        locations="location",
+                        locationmode="country names", # Adjust based on your 'location' column data (e.g., 'country names', 'USA-states', 'ISO-3')
+                        size="total_engagements",
+                        hover_name="location",
+                        color="total_engagements",
+                        title="**Peta Engagement Berdasarkan Lokasi**",
+                        projection="natural earth" # You can experiment with 'natural earth', 'orthographic', etc.
+                    )
+                    fig_geo.update_layout(title_x=0.5)
+                    st.plotly_chart(fig_geo, use_container_width=True)
+                    st.markdown("#### Insight:")
+                    for insight in get_insights("Geographical Engagement", df_filtered):
+                        st.markdown(f"- {insight}")
+
+                except Exception as e:
+                    st.warning(f"Tidak dapat membuat peta geografis: {e}. Pastikan data 'Location' Anda valid (nama kota/negara) dan konsisten.")
+                    st.info("Jika data lokasi Anda tidak dikenali oleh Plotly (misalnya, hanya nama provinsi atau kode lokal), peta mungkin tidak muncul.")
+
+
+                st.markdown("---")
+
+                # --- Key Action Summary ---
+                st.header("4. Ringkasan Strategi Kampanye & Tindakan Kunci")
+                st.markdown(
+                    """
+                    Berdasarkan analisis data yang telah dilakukan, berikut adalah ringkasan strategi kampanye dan tindakan kunci yang direkomendasikan:
+
+                    * **Fokus pada Konten Positif:** Terus kembangkan konten yang membangkitkan sentimen positif. Identifikasi elemen kunci dari konten yang berhasil dan replikasi.
+                    * **Optimalkan Platform Unggulan:** Alokasikan lebih banyak sumber daya dan perhatian pada *platform* yang menunjukkan *engagement* tertinggi. Pertimbangkan strategi khusus untuk mempertahankan dan meningkatkan performa di *platform* tersebut.
+                    * **Diversifikasi & Eksperimen Format Media:** Meskipun ada tipe media yang dominan, terus lakukan eksperimen dengan format media lain untuk melihat respon audiens yang berbeda dan menjangkau segmen baru.
+                    * **Targetkan Lokasi Kunci:** Fokuskan upaya pemasaran dan distribusi konten di lokasi-lokasi dengan *engagement* tertinggi. Pertimbangkan konten atau kampanye yang terlokalisasi untuk area ini.
+                    * **Pantau Tren Engagement Berkala:** Lakukan pemantauan rutin terhadap tren *engagement* untuk mengidentifikasi pola musiman, dampak kampanye, dan anomali. Ini memungkinkan respons cepat terhadap perubahan performa.
+                    * **Analisis Mendalam Sentimen Negatif (jika ada):** Jika sentimen negatif signifikan, lakukan analisis akar masalah untuk mengidentifikasi penyebabnya (misalnya, isu produk, layanan pelanggan, atau miskomunikasi) dan segera tangani.
+                    """
+                )
+
+                st.markdown("---")
+                # --- Export Data Button ---
+                st.sidebar.header("5. Ekspor Data")
+                # Create a buffer to write to
+                buffer = io.BytesIO()
+                # Write DataFrame to Excel in the buffer
+                with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                    df_filtered.to_excel(writer, index=False, sheet_name='Filtered_Data')
+                buffer.seek(0) # Rewind the buffer to the beginning
+
+                st.sidebar.download_button(
+                    label="Unduh Data yang Difilter (Excel)",
+                    data=buffer,
+                    file_name="filtered_media_data.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                st.sidebar.info("Data yang diunduh akan sesuai dengan filter yang Anda pilih di dashboard.")
+
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat membaca atau memproses file: {e}")
+            st.info("Harap pastikan file CSV Anda memiliki kolom yang benar: **'Date', 'Platform', 'Sentiment', 'Location', 'Engagements', 'Media Type'** dan format datanya valid.")
+
+else:
+    st.info("Silakan unggah file CSV Anda di sidebar untuk memulai analisis.")
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("Dibuat dengan ❤️ oleh [Nama Kelompok Anda/Nama Anda]")
