@@ -133,7 +133,7 @@ st.markdown("""
     body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         background-color: #F8F8F8; /* Light gray background */
-        color: #333333;
+        color: #333333; /* Default text color, ensuring black */
     }
 
     /* Main content container */
@@ -252,7 +252,7 @@ st.markdown("""
     }
     div[data-testid="stMetricValue"] {
         font-size: 2.8rem; /* Larger font for KPI numbers */
-        color: #1C1C1E;
+        color: #1C1C1E; /* Dark text for KPI values */
         font-weight: 700;
     }
 
@@ -285,16 +285,21 @@ st.markdown("""
     footer { visibility: hidden; }
 
     /* Custom classes for spacing or card-like appearance */
-    .card {
+    .stContainer { /* Apply card styles to all st.container by default */
         background-color: #FFFFFF;
         border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        color: #333333; /* Ensure text inside containers is black */
+    }
+    /* Specific styling for children within a container if needed */
+    .stContainer h1, .stContainer h2, .stContainer h3, .stContainer h4, .stContainer p, .stContainer ul, .stContainer li {
+        color: #1C1C1E; /* Ensure headers and text inside containers are dark */
     }
 
 </style>
-""", unsafe_allow_html=True) # THIS IS LINE 182, ensuring it's closed correctly.
+""", unsafe_allow_html=True)
 
 # --- Main Title ---
 st.title("📊 Media Intelligence Dashboard")
@@ -303,13 +308,14 @@ Selamat datang di Dashboard Analisis Kampanye Anda. Unggah file CSV untuk mendap
 """)
 st.markdown("---") # Garis pemisah
 
-# --- Sidebar: Upload File ---
-st.sidebar.header("1. Unggah File CSV Anda")
-uploaded_file = st.sidebar.file_uploader(
-    "Seret & Lepas atau Klik untuk Unggah file CSV Anda",
-    type=["csv"],
-    help="Pastikan file CSV memiliki kolom: Date, Platform, Sentiment, Location, Engagements, Media Type."
-)
+# --- Bagian 1: Unggah & Pembersihan Data ---
+with st.container(): # Ini akan menjadi "kartu" putih pertama
+    st.header("1. Unggah File CSV Anda")
+    uploaded_file = st.file_uploader(
+        "Seret & Lepas atau Klik untuk Unggah file CSV Anda",
+        type=["csv"],
+        help="Pastikan file CSV memiliki kolom: Date, Platform, Sentiment, Location, Engagements, Media Type."
+    )
 
 df = None # Inisialisasi DataFrame menjadi None
 
@@ -317,27 +323,28 @@ if uploaded_file is not None:
     with st.spinner('Memproses file dan menyiapkan dashboard... Ini mungkin memerlukan beberapa detik.'): # Indikator loading yang lebih informatif
         try:
             df = pd.read_csv(uploaded_file)
-            st.sidebar.success("File berhasil diunggah!")
+            st.success("File berhasil diunggah!")
 
-            st.header("2. Pembersihan Data")
-            st.markdown(
-                """
-                Langkah-langkah pembersihan data yang dilakukan secara otomatis:
-                -   Mengubah kolom **'Date'** ke format datetime.
-                -   Mengisi nilai **'Engagements'** yang kosong (missing) dengan 0.
-                -   Menormalisasi nama kolom (mengubah ke huruf kecil dan mengganti spasi dengan garis bawah).
-                """
-            )
+            with st.container(): # "Kartu" untuk Pembersihan Data
+                st.header("2. Pembersihan Data")
+                st.markdown(
+                    """
+                    Langkah-langkah pembersihan data yang dilakukan secara otomatis:
+                    -   Mengubah kolom **'Date'** ke format datetime.
+                    -   Mengisi nilai **'Engagements'** yang kosong (missing) dengan 0.
+                    -   Menormalisasi nama kolom (mengubah ke huruf kecil dan mengganti spasi dengan garis bawah).
+                    """
+                )
 
-            # --- Data Cleaning ---
-            df.columns = df.columns.str.lower().str.replace(' ', '_')
-            df['date'] = pd.to_datetime(df['date'], errors='coerce')
-            df['engagements'] = pd.to_numeric(df['engagements'], errors='coerce').fillna(0).astype(int)
-            df.dropna(subset=['date'], inplace=True)
+                # --- Data Cleaning ---
+                df.columns = df.columns.str.lower().str.replace(' ', '_')
+                df['date'] = pd.to_datetime(df['date'], errors='coerce')
+                df['engagements'] = pd.to_numeric(df['engagements'], errors='coerce').fillna(0).astype(int)
+                df.dropna(subset=['date'], inplace=True)
 
-            st.success("Pembersihan data selesai!")
-            st.subheader("Pratinjau Data Setelah Dibersihkan:")
-            st.dataframe(df.head())
+                st.success("Pembersihan data selesai!")
+                st.subheader("Pratinjau Data Setelah Dibersihkan:")
+                st.dataframe(df.head())
 
             st.markdown("---")
             st.header("3. Visualisasi Interaktif & Insight")
@@ -390,21 +397,22 @@ if uploaded_file is not None:
                 st.warning("Tidak ada data yang cocok dengan filter yang dipilih. Harap sesuaikan filter Anda atau unggah file CSV yang berbeda.")
             else:
                 # --- Dynamic KPIs ---
-                st.subheader("3.0. Key Performance Indicators (KPIs)")
-                kpi1, kpi2, kpi3 = st.columns(3)
+                with st.container(): # "Kartu" untuk KPI
+                    st.subheader("3.0. Key Performance Indicators (KPIs)")
+                    kpi1, kpi2, kpi3 = st.columns(3)
 
-                with kpi1:
-                    total_engagements_kpi = df_filtered['engagements'].sum()
-                    st.metric(label="Total Engagements", value=f"{total_engagements_kpi:,.0f}")
-                    # You could add a delta here if comparing to a previous period
+                    with kpi1:
+                        total_engagements_kpi = df_filtered['engagements'].sum()
+                        st.metric(label="Total Engagements", value=f"{total_engagements_kpi:,.0f}")
+                        # You could add a delta here if comparing to a previous period
 
-                with kpi2:
-                    unique_platforms_kpi = df_filtered['platform'].nunique()
-                    st.metric(label="Jumlah Platform Aktif", value=f"{unique_platforms_kpi}")
+                    with kpi2:
+                        unique_platforms_kpi = df_filtered['platform'].nunique()
+                        st.metric(label="Jumlah Platform Aktif", value=f"{unique_platforms_kpi}")
 
-                with kpi3:
-                    num_data_points_kpi = len(df_filtered)
-                    st.metric(label="Jumlah Data Point", value=f"{num_data_points_kpi:,.0f}")
+                    with kpi3:
+                        num_data_points_kpi = len(df_filtered)
+                        st.metric(label="Jumlah Data Point", value=f"{num_data_points_kpi:,.0f}")
 
                 st.markdown("---") # Separator
 
@@ -412,7 +420,7 @@ if uploaded_file is not None:
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    with st.container(border=False): # Card-like appearance
+                    with st.container(): # "Kartu" untuk Sentiment
                         st.subheader("3.1. Pie Chart: Sentiment Breakdown")
                         sentiment_counts = df_filtered['sentiment'].value_counts().reset_index()
                         sentiment_counts.columns = ['sentiment', 'count']
@@ -426,7 +434,7 @@ if uploaded_file is not None:
                             st.markdown(f"- {insight}")
 
                 with col2:
-                    with st.container(border=False): # Card-like appearance
+                    with st.container(): # "Kartu" untuk Engagement Trend
                         st.subheader("3.2. Line Chart: Engagement Trend over Time")
                         engagement_over_time = df_filtered.groupby(df_filtered['date'].dt.to_period('W'))['engagements'].sum().reset_index()
                         engagement_over_time['date'] = engagement_over_time['date'].dt.start_time
@@ -446,7 +454,7 @@ if uploaded_file is not None:
                 col3, col4 = st.columns(2)
 
                 with col3:
-                    with st.container(border=False): # Card-like appearance
+                    with st.container(): # "Kartu" untuk Platform Engagements
                         st.subheader("3.3. Bar Chart: Platform Engagements")
                         platform_engagements = df_filtered.groupby('platform')['engagements'].sum().sort_values(ascending=True).reset_index()
                         fig_platform = px.bar(platform_engagements, x='engagements', y='platform', orientation='h',
@@ -462,7 +470,7 @@ if uploaded_file is not None:
                             st.markdown(f"- {insight}")
 
                 with col4:
-                    with st.container(border=False): # Card-like appearance
+                    with st.container(): # "Kartu" untuk Media Type Mix
                         st.subheader("3.4. Pie Chart: Media Type Mix")
                         media_type_counts = df_filtered['media_type'].value_counts().reset_index()
                         media_type_counts.columns = ['media_type', 'count']
@@ -479,7 +487,7 @@ if uploaded_file is not None:
 
                 # --- Row 3: Top 5 Locations & Geographical Engagement ---
                 st.subheader("3.5. Top 5 Lokasi Berdasarkan Engagement")
-                with st.container(border=False): # Card-like appearance
+                with st.container(): # "Kartu" untuk Top Locations
                     top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).sort_values(ascending=True).reset_index()
                     fig_locations = px.bar(top_locations, x='engagements', y='location', orientation='h',
                                           title='**Top 5 Lokasi Berdasarkan Total Engagement**',
@@ -495,7 +503,7 @@ if uploaded_file is not None:
 
                 # --- Geographical Map (Experimental - Requires valid location data) ---
                 st.subheader("3.6. Peta Engagement Geografis (Eksperimental)")
-                with st.container(border=False): # Card-like appearance
+                with st.container(): # "Kartu" untuk Peta Geografis
                     st.info("Peta ini akan bekerja paling baik jika kolom 'Location' Anda berisi nama kota atau negara yang dapat dikenali oleh Plotly.")
                     try:
                         location_engagements_map = df_filtered.groupby('location')['engagements'].sum().reset_index()
@@ -526,7 +534,7 @@ if uploaded_file is not None:
 
                 # --- Key Action Summary ---
                 st.header("4. Ringkasan Strategi Kampanye & Tindakan Kunci")
-                with st.container(border=False): # Card-like appearance
+                with st.container(): # "Kartu" untuk Ringkasan Strategi
                     st.markdown(
                         """
                         Berdasarkan analisis data yang telah dilakukan, berikut adalah ringkasan strategi kampanye dan tindakan kunci yang direkomendasikan:
@@ -541,7 +549,7 @@ if uploaded_file is not None:
                     )
 
                 st.markdown("---")
-                # --- Export Data Button ---
+                # --- Export Data Button (di Sidebar) ---
                 st.sidebar.header("5. Ekspor Data")
                 # Create a buffer to write to
                 buffer = io.BytesIO()
@@ -558,18 +566,18 @@ if uploaded_file is not None:
                 )
                 st.sidebar.info("Data yang diunduh akan sesuai dengan filter yang Anda pilih di dashboard.")
 
-                # --- Instructions for Downloading Dashboard ---
-                st.markdown("---")
-                st.header("Cara Mendapatkan Laporan Dashboard Anda")
-                st.markdown("""
-                Untuk mendapatkan salinan visual dari dashboard ini (termasuk grafik dan insight yang Anda lihat), Anda bisa menggunakan fitur "Cetak ke PDF" bawaan browser Anda:
+                # --- Instructions for Downloading Dashboard (Main Content) ---
+                with st.container(): # "Kartu" untuk Cara Download
+                    st.header("Cara Mendapatkan Laporan Dashboard Anda")
+                    st.markdown("""
+                    Untuk mendapatkan salinan visual dari dashboard ini (termasuk grafik dan insight yang Anda lihat), Anda bisa menggunakan fitur "Cetak ke PDF" bawaan browser Anda:
 
-                1.  Tekan **`Ctrl + P`** (Windows/Linux) atau **`Cmd + P`** (Mac) pada keyboard Anda.
-                2.  Pada dialog cetak yang muncul, pilih tujuan (**"Save as PDF"** atau **"Print to PDF"**).
-                3.  Klik tombol **"Print"** atau **"Save"**.
+                    1.  Tekan **`Ctrl + P`** (Windows/Linux) atau **`Cmd + P`** (Mac) pada keyboard Anda.
+                    2.  Pada dialog cetak yang muncul, pilih tujuan (**"Save as PDF"** atau **"Print to PDF"**).
+                    3.  Klik tombol **"Print"** atau **"Save"**.
 
-                Anda juga dapat mengunduh grafik individu sebagai gambar (PNG/SVG) dengan mengarahkan kursor mouse ke atas grafik dan mengklik ikon kamera (📷) yang muncul di pojok kanan atas.
-                """)
+                    Anda juga dapat mengunduh grafik individu sebagai gambar (PNG/SVG) dengan mengarahkan kursor mouse ke atas grafik dan mengklik ikon kamera (📷) yang muncul di pojok kanan atas.
+                    """)
 
 
         except Exception as e:
@@ -580,4 +588,4 @@ else:
     st.info("Silakan unggah file CSV Anda di sidebar untuk memulai analisis.")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Dibuat dengan ❤️ oleh [Nama Kelompok Anda/Nama Anda]")
+st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra")
