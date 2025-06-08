@@ -237,30 +237,6 @@ st.markdown("""
         margin-bottom: 0.6rem;
     }
 
-    /* Buttons (e.g., "Start Slide" or "Upload") */
-    .stButton>button {
-        background-color: #4CAF50; /* Green for main action buttons */
-        color: white;
-        padding: 0.8rem 2rem;
-        border-radius: 12px; /* Slightly more rounded */
-        border: none;
-        cursor: pointer;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-        box-shadow: 0 5px 15px rgba(0,255,0,0.25); /* Greenish shadow */
-        font-size: 1.1rem; /* Larger button text */
-    }
-    .stButton>button:hover {
-        background-color: #45a049;
-        transform: translateY(-3px);
-    }
-    .stButton>button:active {
-        background-color: #3e8e41;
-        transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(0,255,0,0.3);
-    }
-
     /* Alerts (Info, Success, Warning, Error) */
     .stAlert {
         border-radius: 10px;
