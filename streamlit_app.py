@@ -1,9 +1,11 @@
+# streamlit_app.py
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import io
-import datetime # Import the datetime module
+import datetime # Pastikan ini terimpor
 
 # --- Helper Function to get Insights ---
 def get_insights(chart_title, df_filtered=None):
@@ -23,7 +25,7 @@ def get_insights(chart_title, df_filtered=None):
                 insights.append(f"Sentimen negatif sebesar {negative_pct:.1%} mengindikasikan area yang perlu diperbaiki. Perlu dianalisis akar masalah dari konten atau respons yang menimbulkan sentimen ini.")
             else:
                 insights.append("Tidak ada sentimen negatif terdeteksi, menunjukkan penerimaan yang sangat baik.")
-            insights.append(f"Proporsi sentimen netral sebesar {neutral_pct:.1%} dapat mengindikasikan peluang untuk lebih mengarahkan audiens ke sentimen positif melalui call-to-action yang lebih jelas atau konten yang lebih memprovokasi emosi.")
+            insights.append(f"Proporsi sentimen netral sebesar {neutral_pct:.1%} dapat mengindikasikan peluang untuk lebih mengarahkan audiens ke sentimen positif melalui *call-to-action* yang lebih jelas atau konten yang lebih memprovokasi emosi.")
         else:
             insights.append("Data sentimen tidak cukup untuk analisis.")
 
@@ -35,27 +37,27 @@ def get_insights(chart_title, df_filtered=None):
             min_engagement_date = df_filtered_weekly.loc[df_filtered_weekly['engagements'].idxmin(), 'date']
             total_engagements = df_filtered_weekly['engagements'].sum()
 
-            insights.append(f"Tren engagement menunjukkan puncaknya pada minggu yang dimulai **{max_engagement_date.strftime('%d %b %Y')}**, menunjukkan waktu yang efektif untuk aktivitas kampanye tertentu.")
-            insights.append(f"Terjadi penurunan engagement pada minggu yang dimulai **{min_engagement_date.strftime('%d %b %Y')}**, perlu diinvestigasi faktor penyebab seperti perubahan strategi, konten, atau kejadian eksternal.")
-            insights.append(f"Total engagement dalam periode ini adalah **{total_engagements:,.0f}**. Fluktuasi engagement menunjukkan pentingnya konsistensi dalam produksi konten dan interaksi yang relevan.")
+            insights.append(f"Tren *engagement* menunjukkan puncaknya pada minggu yang dimulai **{max_engagement_date.strftime('%d %b %Y')}**, menunjukkan waktu yang efektif untuk aktivitas kampanye tertentu.")
+            insights.append(f"Terjadi penurunan *engagement* pada minggu yang dimulai **{min_engagement_date.strftime('%d %b %Y')}**, perlu diinvestigasi faktor penyebab seperti perubahan strategi, konten, atau kejadian eksternal.")
+            insights.append(f"Total *engagement* dalam periode ini adalah **{total_engagements:,.0f}**. Fluktuasi *engagement* menunjukkan pentingnya konsistensi dalam produksi konten dan interaksi yang relevan.")
         else:
-            insights.append("Data tren engagement tidak cukup untuk analisis.")
+            insights.append("Data tren *engagement* tidak cukup untuk analisis.")
 
     elif chart_title == "Platform Engagements":
         platform_engagements = df_filtered.groupby('platform')['engagements'].sum().sort_values(ascending=True).reset_index() # Ascending for better bar order
         if not platform_engagements.empty:
             top_platform = platform_engagements.iloc[0]
-            insights.append(f"**{top_platform['platform']}** adalah platform dengan engagement tertinggi ({top_platform['engagements']:,.0f}), menjadikannya saluran paling efektif untuk kampanye ini.")
+            insights.append(f"**{top_platform['platform']}** adalah *platform* dengan *engagement* tertinggi ({top_platform['engagements']:,.0f}), menjadikannya saluran paling efektif untuk kampanye ini.")
             if len(platform_engagements) > 1:
                 second_platform = platform_engagements.iloc[1]
                 insights.append(f"**{second_platform['platform']}** berada di posisi kedua ({second_platform['engagements']:,.0f}), menunjukkan potensi yang baik namun mungkin masih bisa dioptimalkan.")
             if len(platform_engagements) > 2:
                  least_platform = platform_engagements.iloc[-1]
-                 insights.append(f"**{least_platform['platform']}** memiliki engagement terendah ({least_platform['engagements']:,.0f}), pertimbangkan untuk mengevaluasi kembali strategi atau alokasi sumber daya di platform ini.")
+                 insights.append(f"**{least_platform['platform']}** memiliki *engagement* terendah ({least_platform['engagements']:,.0f}), pertimbangkan untuk mengevaluasi kembali strategi atau alokasi sumber daya di *platform* ini.")
             else:
-                insights.append("Diversifikasi platform penting untuk menjangkau audiens yang berbeda, namun alokasi sumber daya harus proporsional dengan performa engagement.")
+                insights.append("Diversifikasi *platform* penting untuk menjangkau audiens yang berbeda, namun alokasi sumber daya harus proporsional dengan performa *engagement*.")
         else:
-            insights.append("Data engagement per platform tidak cukup untuk analisis.")
+            insights.append("Data *engagement* per *platform* tidak cukup untuk analisis.")
 
     elif chart_title == "Media Type Mix":
         media_type_counts = df_filtered['media_type'].value_counts(normalize=True).reset_index()
@@ -78,13 +80,13 @@ def get_insights(chart_title, df_filtered=None):
         top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).sort_values(ascending=True).reset_index()
         if not top_locations.empty:
             top1_loc = top_locations.iloc[0]
-            insights.append(f"**{top1_loc['location']}** adalah lokasi dengan engagement tertinggi ({top1_loc['engagements']:,.0f}), ini adalah pasar utama yang harus terus ditargetkan dengan kuat.")
+            insights.append(f"**{top1_loc['location']}** adalah lokasi dengan *engagement* tertinggi ({top1_loc['engagements']:,.0f}), ini adalah pasar utama yang harus terus ditargetkan dengan kuat.")
             if len(top_locations) > 1:
                 top2_loc = top_locations.iloc[1]
-                insights.append(f"**{top2_loc['location']}** juga menunjukkan engagement yang sangat tinggi ({top2_loc['engagements']:,.0f}), menjadikannya lokasi kunci kedua untuk strategi pemasaran.")
+                insights.append(f"**{top2_loc['location']}** juga menunjukkan *engagement* yang sangat tinggi ({top2_loc['engagements']:,.0f}), menjadikannya lokasi kunci kedua untuk strategi pemasaran.")
             if len(top_locations) > 2:
                 remaining_eng = top_locations.iloc[2:]['engagements'].sum()
-                insights.append(f"Terdapat **{len(top_locations) - 2}** lokasi lain dalam top 5 yang menyumbang total {remaining_eng:,.0f} engagement, menunjukkan distribusi minat geografis yang beragam.")
+                insights.append(f"Terdapat **{len(top_locations) - 2}** lokasi lain dalam top 5 yang menyumbang total {remaining_eng:,.0f} *engagement*, menunjukkan distribusi minat geografis yang beragam.")
             else:
                 insights.append("Data lokasi membantu dalam lokalisasi konten dan strategi pemasaran, mengidentifikasi pasar utama dan potensi ekspansi.")
         else:
@@ -147,7 +149,7 @@ st.markdown("""
 st.title("📊 Interactive Media Intelligence Dashboard")
 st.markdown("""
 Selamat datang di Dashboard Analisis Kampanye!
-Unggah file CSV Anda untuk mendapatkan insight mendalam tentang performa media.
+Unggah file CSV Anda untuk mendapatkan *insight* mendalam tentang performa media.
 """)
 st.markdown("---")
 
@@ -196,7 +198,7 @@ if uploaded_file is not None:
 
             st.markdown("---")
             st.header("3. Visualisasi Interaktif & Insight")
-            st.markdown("Gunakan filter di sidebar untuk menyesuaikan tampilan data dan mendapatkan insight yang spesifik.")
+            st.markdown("Gunakan filter di sidebar untuk menyesuaikan tampilan data dan mendapatkan *insight* yang spesifik.")
 
             # --- Sidebar: Filters ---
             st.sidebar.header("Filter Data")
@@ -338,10 +340,10 @@ if uploaded_file is not None:
                     Berdasarkan analisis data yang telah dilakukan, berikut adalah ringkasan strategi kampanye dan tindakan kunci yang direkomendasikan:
 
                     * **Fokus pada Konten Positif:** Terus kembangkan konten yang membangkitkan sentimen positif. Identifikasi elemen kunci dari konten yang berhasil dan replikasi.
-                    * **Optimalkan Platform Unggulan:** Alokasikan lebih banyak sumber daya dan perhatian pada platform yang menunjukkan engagement tertinggi. Pertimbangkan strategi khusus untuk mempertahankan dan meningkatkan performa di platform tersebut.
+                    * **Optimalkan Platform Unggulan:** Alokasikan lebih banyak sumber daya dan perhatian pada *platform* yang menunjukkan *engagement* tertinggi. Pertimbangkan strategi khusus untuk mempertahankan dan meningkatkan performa di *platform* tersebut.
                     * **Diversifikasi & Eksperimen Format Media:** Meskipun ada tipe media yang dominan, terus lakukan eksperimen dengan format media lain untuk melihat respon audiens yang berbeda dan menjangkau segmen baru.
-                    * **Targetkan Lokasi Kunci:** Fokuskan upaya pemasaran dan distribusi konten di lokasi-lokasi dengan engagement tertinggi. Pertimbangkan konten atau kampanye yang terlokalisasi untuk area ini.
-                    * **Pantau Tren Engagement Berkala:** Lakukan pemantauan rutin terhadap tren engagement untuk mengidentifikasi pola musiman, dampak kampanye, dan anomali. Ini memungkinkan respons cepat terhadap perubahan performa.
+                    * **Targetkan Lokasi Kunci:** Fokuskan upaya pemasaran dan distribusi konten di lokasi-lokasi dengan *engagement* tertinggi. Pertimbangkan konten atau kampanye yang terlokalisasi untuk area ini.
+                    * **Pantau Tren Engagement Berkala:** Lakukan pemantauan rutin terhadap tren *engagement* untuk mengidentifikasi pola musiman, dampak kampanye, dan anomali. Ini memungkinkan respons cepat terhadap perubahan performa.
                     * **Analisis Mendalam Sentimen Negatif (jika ada):** Jika sentimen negatif signifikan, lakukan analisis akar masalah untuk mengidentifikasi penyebabnya (misalnya, isu produk, layanan pelanggan, atau miskomunikasi) dan segera tangani.
                     """
                 )
