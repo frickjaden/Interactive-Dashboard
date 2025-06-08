@@ -375,4 +375,4 @@ else:
     st.info("Silakan unggah file CSV Anda di sidebar untuk memulai analisis.")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Dibuat dengan ❤️ oleh [Nama Kelompok Anda/Nama Anda]") # Ganti dengan nama kelompok/nama Anda
+st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra - 2306221705") # Ganti dengan nama kelompok/nama Anda
