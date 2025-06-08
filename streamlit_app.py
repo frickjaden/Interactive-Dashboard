@@ -138,7 +138,7 @@ st.markdown("""
         padding-right: 3rem;
         padding-left: 3rem;
         padding-bottom: 2.5rem;
-        max-width: 1200px; /* Slightly adjusted max-width for better proportion */
+        max-width: 1200px; /* Adjusted max-width for better proportion */
         margin: auto; /* Center alignment */
     }
 
@@ -332,7 +332,6 @@ st.markdown("""
         color: #343A40;
     }
 
-
     /* Remove default Streamlit 'Made with Streamlit' footer */
     footer { visibility: hidden; }
 
@@ -351,22 +350,26 @@ st.markdown("""
         color: #212529; /* Dark color for text within cards */
     }
 
-    /* Plotly chart container styling (for better integration and avoiding "gepeng") */
-    .js-plotly-plot {
+    /* Plotly chart container styling to fix "gepeng" issue */
+    /* Target the div that Streamlit creates for Plotly chart */
+    .stPlotlyChart {
         border-radius: 12px;
-        overflow: hidden;
+        overflow: hidden; /* Ensures plot doesn't bleed out of rounded corners */
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         border: 1px solid #F0F0F0;
-        /* Ensure responsive height/width without distorting aspect ratio */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        background-color: #FFFFFF; /* Ensure background is white */
+        min-height: 400px; /* Set a minimum height for all charts */
+        display: block; /* Important for preventing weird flex issues */
     }
-    .plotly-graph-div {
-        width: 100% !important; /* Force plotly div to take 100% width of its parent */
-        height: auto !important; /* Let height adjust automatically */
-        min-height: 400px; /* Ensure minimum height for charts */
+    /* Force Plotly's inner div to take full width and manage its own aspect ratio */
+    .js-plotly-plot .plotly-graph-div {
+        width: 100% !important;
+        height: 100% !important; /* Ensure it fills parent height */
+        display: block;
+    }
+    /* Specific adjustment for pie charts if they look squished */
+    .js-plotly-plot[data-dash-is-current='true'] > .plotly > .main-svg {
+        margin: auto !important; /* Center the SVG within the container */
     }
 </style>
 """, unsafe_allow_html=True)
@@ -378,9 +381,9 @@ Selamat datang di Dashboard Analisis Kampanye Anda. Unggah file CSV untuk mendap
 """)
 st.markdown("---") # Garis pemisah
 
-# --- Bagian 1: Unggah & Pembersihan Data ---
+# --- Bagian Unggah & Pembersihan Data ---
 with st.container():
-    st.header("1. Unggah Data Anda")
+    st.header("Unggah Data Anda") # Headline tanpa nomor
     uploaded_file = st.file_uploader(
         "Seret & Lepas atau Klik untuk Unggah file CSV Anda",
         type=["csv"],
@@ -396,7 +399,7 @@ if uploaded_file is not None:
             st.success("File berhasil diunggah!")
 
             with st.container():
-                st.header("2. Pembersihan Data Otomatis")
+                st.header("Pembersihan Data Otomatis") # Headline tanpa nomor
                 st.markdown(
                     """
                     Sistem secara otomatis melakukan pembersihan data untuk memastikan analisis yang akurat:
@@ -418,7 +421,7 @@ if uploaded_file is not None:
 
             st.markdown("---") # Separator
 
-            st.header("3. Analisis Interaktif & Insight")
+            st.header("Analisis Interaktif & Insight") # Headline tanpa nomor
             st.markdown("Gunakan filter di sidebar untuk menyesuaikan tampilan data dan mendapatkan **insight yang spesifik** sesuai kebutuhan Anda.")
 
             # --- Sidebar: Filters ---
@@ -469,7 +472,7 @@ if uploaded_file is not None:
             else:
                 # --- Dynamic KPIs ---
                 with st.container():
-                    st.subheader("3.1. Key Performance Indicators (KPIs)")
+                    st.subheader("Key Performance Indicators (KPIs)") # Headline tanpa nomor
                     kpi1, kpi2, kpi3 = st.columns(3)
 
                     with kpi1:
@@ -486,14 +489,14 @@ if uploaded_file is not None:
 
                 # --- Visualizations Section ---
                 st.markdown("---")
-                st.subheader("3.2. Visualisasi Utama")
+                st.subheader("Visualisasi Utama") # Headline tanpa nomor
 
                 # --- Row 1: Sentiment Breakdown & Engagement Trend ---
                 col1, col2 = st.columns(2)
 
                 with col1:
                     with st.container():
-                        st.write("### Distribusi Sentimen")
+                        st.write("### Distribusi Sentimen") # Use st.write for sub-sub-headers in containers
                         sentiment_counts = df_filtered['sentiment'].value_counts().reset_index()
                         sentiment_counts.columns = ['sentiment', 'count']
                         fig_sentiment = px.pie(sentiment_counts, values='count', names='sentiment',
@@ -602,7 +605,7 @@ if uploaded_file is not None:
 
                 # --- Key Action Summary ---
                 with st.container():
-                    st.header("4. Ringkasan Strategi Kampanye & Tindakan Kunci")
+                    st.header("Ringkasan Strategi Kampanye & Tindakan Kunci") # Headline tanpa nomor
                     st.markdown(
                         """
                         Berdasarkan analisis data yang telah dilakukan, berikut adalah ringkasan strategi kampanye dan tindakan kunci yang direkomendasikan:
@@ -618,7 +621,7 @@ if uploaded_file is not None:
 
                 st.markdown("---")
                 # --- Export Data Button (di Sidebar) ---
-                st.sidebar.header("5. Ekspor Data")
+                st.sidebar.header("Ekspor Data") # Headline tanpa nomor
                 # Create a buffer to write to
                 buffer = io.BytesIO()
                 # Write DataFrame to Excel in the buffer
@@ -636,7 +639,7 @@ if uploaded_file is not None:
 
                 # --- Instructions for Downloading Dashboard (Main Content) ---
                 with st.container():
-                    st.header("6. Cara Mendapatkan Laporan Dashboard Anda")
+                    st.header("Cara Mendapatkan Laporan Dashboard Anda") # Headline tanpa nomor
                     st.markdown("""
                     Untuk mendapatkan salinan visual dari dashboard ini (termasuk grafik dan insight yang Anda lihat), Anda bisa menggunakan fitur **"Cetak ke PDF" bawaan browser** Anda:
 
@@ -656,4 +659,4 @@ else:
     st.info("Silakan unggah file CSV Anda di sidebar untuk memulai analisis.")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra")
+st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra Marriane")
