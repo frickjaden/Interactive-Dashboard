@@ -915,6 +915,7 @@ elif st.session_state.page == 'Contact':
         * **Email:** shannonsifra@gmail.com
         * **LinkedIn:** Shannon Sifra
         * **GitHub:** Frickjaden
+        
         Kami akan senang mendengar dari Anda!
     """)
     st.markdown("---")
