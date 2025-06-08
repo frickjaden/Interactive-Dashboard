@@ -128,8 +128,8 @@ st.markdown("""
     /* General body and font styles */
     html, body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-        background-color: #F8F9FA; /* Very light grey, almost white */
-        color: #212529; /* Dark charcoal for primary text */
+        background-color: #0A1931; /* Dark Blue for background */
+        color: #E0E0E0; /* Light grey for primary text */
     }
 
     /* Main content area padding and width */
@@ -138,48 +138,48 @@ st.markdown("""
         padding-right: 3rem;
         padding-left: 3rem;
         padding-bottom: 2.5rem;
-        max-width: 1200px; /* Adjusted max-width for better proportion */
-        margin: auto; /* Center alignment */
+        max-width: 1200px;
+        margin: auto;
     }
 
     /* Sidebar styling */
     .css-1d391kg { /* Target sidebar background */
-        background-color: #FFFFFF; /* Pure white sidebar */
-        border-right: 1px solid #E0E0E0; /* Lighter border */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Soft, subtle shadow */
-        border-radius: 0 12px 12px 0; /* More rounded right corners */
+        background-color: #1A2E44; /* Slightly lighter dark blue for sidebar */
+        border-right: 1px solid #2C425C; /* Darker border for sidebar */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* More prominent shadow for dark theme */
+        border-radius: 0 12px 12px 0;
     }
     .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6 {
-        color: #212529; /* Darker headers in sidebar */
+        color: #F0F0F0; /* Light headers in sidebar */
     }
     .css-1d391kg .stSelectbox > label, .css-1d391kg .stMultiSelect > label, .css-1d391kg .stDateInput > label {
-        color: #495057; /* Labels in sidebar */
+        color: #C0C0C0; /* Labels in sidebar */
         font-weight: 500;
     }
 
     /* Headers throughout the app */
     h1 {
-        color: #0A1931; /* Dark Blue for main title */
+        color: #FFFFFF; /* White for main title */
         font-weight: 700;
-        font-size: 2.8rem; /* Larger main title */
+        font-size: 2.8rem;
         margin-bottom: 0.8rem;
     }
     h2 {
-        color: #0A1931; /* Dark Blue for section titles */
+        color: #FFFFFF; /* White for section titles */
         font-weight: 600;
         font-size: 2rem;
         margin-top: 2.5rem;
         margin-bottom: 1.2rem;
     }
     h3 {
-        color: #212529; /* Dark charcoal for sub-headers */
+        color: #F0F0F0; /* Light grey for sub-headers */
         font-weight: 600;
         font-size: 1.5rem;
         margin-top: 2rem;
         margin-bottom: 1rem;
     }
     h4 { /* Used for Insight titles */
-        color: #495057; /* Medium grey for insight titles */
+        color: #B0B0B0; /* Lighter grey for insight titles */
         font-weight: 500;
         font-size: 1.2rem;
         margin-top: 1.8rem;
@@ -188,7 +188,7 @@ st.markdown("""
 
     /* Buttons */
     .stButton>button {
-        background-color: #0A1931; /* Dark Blue */
+        background-color: #4CAF50; /* Green for action, good contrast on dark */
         color: white;
         padding: 0.8rem 1.8rem;
         border-radius: 10px;
@@ -197,16 +197,16 @@ st.markdown("""
         font-weight: 600;
         letter-spacing: 0.5px;
         transition: background-color 0.2s ease, transform 0.1s ease;
-        box-shadow: 0 4px 12px rgba(10, 25, 49, 0.2); /* Dark blue subtle shadow */
+        box-shadow: 0 4px 12px rgba(0,255,0,0.15); /* Greenish shadow */
     }
     .stButton>button:hover {
-        background-color: #071324; /* Slightly darker blue on hover */
-        transform: translateY(-2px); /* Lift effect */
+        background-color: #45a049; /* Slightly darker green on hover */
+        transform: translateY(-2px);
     }
     .stButton>button:active {
-        background-color: #050E1A; /* Even darker on click */
+        background-color: #3e8e41; /* Even darker on click */
         transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(10, 25, 49, 0.3);
+        box-shadow: 0 2px 8px rgba(0,255,0,0.2);
     }
 
     /* Alerts (Info, Success, Warning, Error) */
@@ -214,18 +214,19 @@ st.markdown("""
         border-radius: 10px;
         padding: 1.2rem;
         font-size: 0.95rem;
-        border: 1px solid; /* Subtle border for clarity */
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .stAlert.info { background-color: #E6F3FF; border-color: #92B5F7; color: #0A1931; } /* Blueish tint */
-    .stAlert.success { background-color: #E8FDE7; border-color: #A8E6CF; color: #388E3C; } /* Light green */
-    .stAlert.warning { background-color: #FFF9E0; border-color: #FFECB3; color: #FFC107; } /* Light orange-yellow */
-    .stAlert.error { background-color: #FFEBEE; border-color: #FFCDD2; color: #D32F2F; } /* Light red */
+    .stAlert.info { background-color: #1F3850; border-color: #4A90E2; color: #E0E0E0; } /* Dark blue info */
+    .stAlert.success { background-color: #2F4D3C; border-color: #4CAF50; color: #E0E0E0; } /* Dark green success */
+    .stAlert.warning { background-color: #5C4A28; border-color: #FFA000; color: #E0E0E0; } /* Dark orange warning */
+    .stAlert.error { background-color: #5C2828; border-color: #D32F2F; color: #E0E0E0; } /* Dark red error */
+
 
     /* Markdown text, lists */
     .stMarkdown {
         line-height: 1.7;
-        color: #343A40; /* Darker grey for body text */
+        color: #E0E0E0; /* Light grey for body text */
     }
     .stMarkdown ul {
         list-style-type: none;
@@ -239,12 +240,12 @@ st.markdown("""
     }
     .stMarkdown li::before {
         content: "•";
-        color: #0A1931; /* Dark Blue bullet */
+        color: #4A90E2; /* Lighter blue bullet */
         position: absolute;
         left: 0;
         font-weight: bold;
         font-size: 1.2em;
-        line-height: 1; /* Align with text */
+        line-height: 1;
     }
 
     /* Input widgets (multiselect, date input, slider) */
@@ -253,52 +254,58 @@ st.markdown("""
     }
     .stMultiSelect > div > div, .stDateInput > div > label + div > div {
         border-radius: 8px;
-        border: 1px solid #CED4DA; /* Subtle grey border */
+        border: 1px solid #2C425C; /* Darker blue border */
         padding: 0.7rem 1rem;
-        background-color: #FFFFFF;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inner shadow for depth */
+        background-color: #1A2E44; /* Darker blue background for inputs */
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        color: #E0E0E0; /* Light text in inputs */
     }
     .stMultiSelect > div > div:hover, .stDateInput > div > label + div > div:hover {
-        border-color: #A0A9B3; /* Slightly darker on hover */
+        border-color: #4A90E2; /* Lighter blue on hover */
     }
     .stMultiSelect > div > div:focus-within, .stDateInput > div > label + div > div:focus-within {
-        border-color: #0A1931; /* Dark blue on focus */
-        box-shadow: 0 0 0 0.2rem rgba(10, 25, 49, 0.25); /* Blue outline on focus */
+        border-color: #4A90E2; /* Lighter blue on focus */
+        box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25); /* Blue outline on focus */
     }
+    .stMultiSelect span, .stDateInput .flatpickr-day, .stDateInput .current-month { /* text inside multiselect/date input */
+        color: #E0E0E0 !important;
+    }
+
+    /* Slider specific styling */
     .stSlider .st-fx { /* Target slider track */
-        background: #CED4DA;
+        background: #2C425C; /* Darker blue track */
     }
     .stSlider .st-ey { /* Target slider thumb */
-        background: #0A1931;
-        border-color: #0A1931;
+        background: #4A90E2; /* Lighter blue thumb */
+        border-color: #4A90E2;
     }
 
     /* Metric (KPI) boxes */
     div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
+        background-color: #1A2E44; /* Slightly lighter dark blue for KPIs */
         border-radius: 15px;
         padding: 1.8rem;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Soft shadow */
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25); /* More prominent shadow */
         margin-bottom: 2rem;
         text-align: center;
-        border: 1px solid #E9ECEF; /* Very subtle border */
+        border: 1px solid #2C425C; /* Subtle border */
         transition: transform 0.2s ease;
     }
     div[data-testid="stMetric"]:hover {
-        transform: translateY(-3px); /* Subtle hover lift */
+        transform: translateY(-3px);
     }
     div[data-testid="stMetricLabel"] {
         font-size: 1.05rem;
-        color: #6C757D; /* Medium grey for labels */
+        color: #A0A0A0; /* Medium grey for labels */
         font-weight: 500;
         margin-bottom: 0.4rem;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
     div[data-testid="stMetricValue"] {
-        font-size: 3.5rem; /* Larger for impact */
-        color: #0A1931; /* Dark blue for KPI values */
+        font-size: 3.5rem;
+        color: #4A90E2; /* Lighter blue for KPI values */
         font-weight: 700;
     }
 
@@ -308,69 +315,93 @@ st.markdown("""
     }
     .streamlit-expander {
         border-radius: 12px;
-        border: 1px solid #E0E0E0;
-        background-color: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid #2C425C; /* Darker border */
+        background-color: #1A2E44; /* Darker background for expander */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         margin-bottom: 1.5rem;
     }
     .streamlit-expander > button {
         font-weight: 600;
-        color: #212529;
+        color: #F0F0F0; /* Light text for expander header */
         padding: 1rem 1.2rem;
     }
 
     /* Dataframe style */
     .stDataFrame {
         border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
-        border: 1px solid #E8E8E8;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border: 1px solid #2C425C; /* Darker border */
         overflow: hidden;
     }
     .stDataFrame > div > div > div:nth-child(2) > div {
-        background-color: #F0F2F6; /* Lighter grey header */
+        background-color: #1A2E44; /* Darker header background for dataframe */
         font-weight: 600;
-        color: #343A40;
+        color: #F0F0F0; /* Light header text for dataframe */
     }
+    .stDataFrame table th { /* Table headers */
+        background-color: #1A2E44 !important;
+        color: #F0F0F0 !important;
+        border-bottom: 1px solid #2C425C !important;
+    }
+    .stDataFrame table td { /* Table cells */
+        background-color: #0F2035 !important; /* Even darker for rows */
+        color: #E0E0E0 !important;
+        border-bottom: 1px solid #2C425C !important;
+    }
+    .stDataFrame table tr:nth-child(even) td {
+        background-color: #12253B !important; /* Slightly different shade for even rows */
+    }
+
 
     /* Remove default Streamlit 'Made with Streamlit' footer */
     footer { visibility: hidden; }
 
     /* Custom container/card style - this will be applied to all st.container() */
     .stContainer {
-        background-color: #FFFFFF;
-        border-radius: 15px; /* Consistent rounded corners */
-        padding: 2.5rem; /* More generous padding */
-        margin-bottom: 2.5rem; /* More space between sections */
-        box-shadow: 0 8px 30px rgba(0,0,0,0.08); /* Softer, larger shadow for cards */
-        border: 1px solid #E9ECEF; /* Very light border to define cards */
-        color: #212529; /* Default text color inside cards */
+        background-color: #1A2E44; /* Darker blue for cards */
+        border-radius: 15px;
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2); /* More prominent shadow */
+        border: 1px solid #2C425C; /* Darker border to define cards */
+        color: #E0E0E0; /* Default text color inside cards */
     }
-    /* Ensure headings inside containers also use dark colors */
+    /* Ensure headings inside containers also use light colors */
     .stContainer h1, .stContainer h2, .stContainer h3, .stContainer h4, .stContainer p {
-        color: #212529; /* Dark color for text within cards */
+        color: #F0F0F0; /* Light color for text within cards */
     }
 
-    /* Plotly chart container styling to fix "gepeng" issue */
-    /* Target the div that Streamlit creates for Plotly chart */
+    /* Plotly chart container styling to fix "gepeng" issue for dark mode */
     .stPlotlyChart {
         border-radius: 12px;
-        overflow: hidden; /* Ensures plot doesn't bleed out of rounded corners */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #F0F0F0;
-        background-color: #FFFFFF; /* Ensure background is white */
-        min-height: 400px; /* Set a minimum height for all charts */
-        display: block; /* Important for preventing weird flex issues */
-    }
-    /* Force Plotly's inner div to take full width and manage its own aspect ratio */
-    .js-plotly-plot .plotly-graph-div {
-        width: 100% !important;
-        height: 100% !important; /* Ensure it fills parent height */
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border: 1px solid #2C425C; /* Darker border */
+        background-color: #0F2035; /* Darker background for chart area itself */
+        min-height: 400px;
         display: block;
     }
-    /* Specific adjustment for pie charts if they look squished */
-    .js-plotly-plot[data-dash-is-current='true'] > .plotly > .main-svg {
-        margin: auto !important; /* Center the SVG within the container */
+    .js-plotly-plot .plotly-graph-div {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
     }
+    .js-plotly-plot[data-dash-is-current='true'] > .plotly > .main-svg {
+        margin: auto !important;
+    }
+
+    /* Plotly specific text colors for dark theme */
+    .modebar, .g-gtitle, .g-xtitle, .g-ytitle, .xtick, .ytick, .g-colorbar-title, .g-colorbar-label {
+        fill: #E0E0E0 !important; /* White/light grey for all Plotly text */
+        color: #E0E0E0 !important;
+    }
+    .plot-container.plotly-graph-div .crisp { /* Plotly axis lines, grid lines */
+        stroke: #404040 !important; /* Darker grey for grid lines */
+    }
+    .plot-container.plotly-graph-div .axis-line { /* Plotly axis lines */
+        stroke: #606060 !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -383,7 +414,7 @@ st.markdown("---") # Garis pemisah
 
 # --- Bagian Unggah & Pembersihan Data ---
 with st.container():
-    st.header("Unggah Data Anda") # Headline tanpa nomor
+    st.header("Unggah Data Anda")
     uploaded_file = st.file_uploader(
         "Seret & Lepas atau Klik untuk Unggah file CSV Anda",
         type=["csv"],
@@ -399,7 +430,7 @@ if uploaded_file is not None:
             st.success("File berhasil diunggah!")
 
             with st.container():
-                st.header("Pembersihan Data Otomatis") # Headline tanpa nomor
+                st.header("Pembersihan Data Otomatis")
                 st.markdown(
                     """
                     Sistem secara otomatis melakukan pembersihan data untuk memastikan analisis yang akurat:
@@ -421,7 +452,7 @@ if uploaded_file is not None:
 
             st.markdown("---") # Separator
 
-            st.header("Analisis Interaktif & Insight") # Headline tanpa nomor
+            st.header("Analisis Interaktif & Insight")
             st.markdown("Gunakan filter di sidebar untuk menyesuaikan tampilan data dan mendapatkan **insight yang spesifik** sesuai kebutuhan Anda.")
 
             # --- Sidebar: Filters ---
@@ -472,7 +503,7 @@ if uploaded_file is not None:
             else:
                 # --- Dynamic KPIs ---
                 with st.container():
-                    st.subheader("Key Performance Indicators (KPIs)") # Headline tanpa nomor
+                    st.subheader("Key Performance Indicators (KPIs)")
                     kpi1, kpi2, kpi3 = st.columns(3)
 
                     with kpi1:
@@ -489,20 +520,22 @@ if uploaded_file is not None:
 
                 # --- Visualizations Section ---
                 st.markdown("---")
-                st.subheader("Visualisasi Utama") # Headline tanpa nomor
+                st.subheader("Visualisasi Utama")
 
                 # --- Row 1: Sentiment Breakdown & Engagement Trend ---
                 col1, col2 = st.columns(2)
 
                 with col1:
                     with st.container():
-                        st.write("### Distribusi Sentimen") # Use st.write for sub-sub-headers in containers
+                        st.write("### Distribusi Sentimen")
                         sentiment_counts = df_filtered['sentiment'].value_counts().reset_index()
                         sentiment_counts.columns = ['sentiment', 'count']
                         fig_sentiment = px.pie(sentiment_counts, values='count', names='sentiment',
                                                title='**Distribusi Sentimen**',
                                                color_discrete_sequence=px.colors.qualitative.Pastel)
-                        fig_sentiment.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
+                        fig_sentiment.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0),
+                                                    plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', # Transparent background for plot
+                                                    font_color='#E0E0E0') # Light font for Plotly
                         st.plotly_chart(fig_sentiment, use_container_width=True)
                         st.markdown("#### Insight:")
                         for insight in get_insights("Sentiment Breakdown", df_filtered):
@@ -515,10 +548,12 @@ if uploaded_file is not None:
                         engagement_over_time['date'] = engagement_over_time['date'].dt.start_time
                         fig_engagement_trend = px.line(engagement_over_time, x='date', y='engagements',
                                                      title='**Tren Engagement dari Waktu ke Waktu (Mingguan)**', markers=True,
-                                                     color_discrete_sequence=["#0A1931"]) # Use Dark Blue for line
-                        fig_engagement_trend.update_xaxes(title_text='Tanggal (Awal Minggu)')
-                        fig_engagement_trend.update_yaxes(title_text='Total Engagements')
-                        fig_engagement_trend.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
+                                                     color_discrete_sequence=["#4A90E2"]) # Lighter blue for line
+                        fig_engagement_trend.update_xaxes(title_text='Tanggal (Awal Minggu)', gridcolor='#2C425C', zerolinecolor='#2C425C') # Darker grid lines
+                        fig_engagement_trend.update_yaxes(title_text='Total Engagements', gridcolor='#2C425C', zerolinecolor='#2C425C')
+                        fig_engagement_trend.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0),
+                                                            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                                                            font_color='#E0E0E0')
                         st.plotly_chart(fig_engagement_trend, use_container_width=True)
                         st.markdown("#### Insight:")
                         for insight in get_insights("Engagement Trend over Time", df_filtered):
@@ -534,10 +569,12 @@ if uploaded_file is not None:
                         fig_platform = px.bar(platform_engagements, x='engagements', y='platform', orientation='h',
                                              title='**Total Engagement per Platform**',
                                              color='platform',
-                                             color_discrete_sequence=px.colors.qualitative.Set2)
-                        fig_platform.update_xaxes(title_text='Total Engagements')
+                                             color_discrete_sequence=px.colors.qualitative.Set2) # You can change this palette
+                        fig_platform.update_xaxes(title_text='Total Engagements', gridcolor='#2C425C', zerolinecolor='#2C425C')
                         fig_platform.update_yaxes(title_text='Platform', categoryarray=platform_engagements['platform'].tolist(), categoryorder="array")
-                        fig_platform.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
+                        fig_platform.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0),
+                                                   plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                                                   font_color='#E0E0E0')
                         st.plotly_chart(fig_platform, use_container_width=True)
                         st.markdown("#### Insight:")
                         for insight in get_insights("Platform Engagements", df_filtered):
@@ -550,8 +587,10 @@ if uploaded_file is not None:
                         media_type_counts.columns = ['media_type', 'count']
                         fig_media_type = px.pie(media_type_counts, values='count', names='media_type',
                                                title='**Distribusi Tipe Media**',
-                                               color_discrete_sequence=px.colors.qualitative.Vivid)
-                        fig_media_type.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
+                                               color_discrete_sequence=px.colors.qualitative.Vivid) # You can change this palette
+                        fig_media_type.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0),
+                                                     plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                                                     font_color='#E0E0E0')
                         st.plotly_chart(fig_media_type, use_container_width=True)
                         st.markdown("#### Insight:")
                         for insight in get_insights("Media Type Mix", df_filtered):
@@ -564,10 +603,12 @@ if uploaded_file is not None:
                     fig_locations = px.bar(top_locations, x='engagements', y='location', orientation='h',
                                           title='**Top 5 Lokasi Berdasarkan Total Engagement**',
                                           color='location',
-                                          color_discrete_sequence=px.colors.qualitative.Dark24)
-                    fig_locations.update_xaxes(title_text='Total Engagements')
+                                          color_discrete_sequence=px.colors.qualitative.Dark24) # You can change this palette
+                    fig_locations.update_xaxes(title_text='Total Engagements', gridcolor='#2C425C', zerolinecolor='#2C425C')
                     fig_locations.update_yaxes(title_text='Lokasi', categoryarray=top_locations['location'].tolist(), categoryorder="array")
-                    fig_locations.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
+                    fig_locations.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0),
+                                                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                                                font_color='#E0E0E0')
                     st.plotly_chart(fig_locations, use_container_width=True)
                     st.markdown("#### Insight:")
                     for insight in get_insights("Top 5 Locations", df_filtered):
@@ -590,7 +631,11 @@ if uploaded_file is not None:
                             projection="natural earth",
                             color_continuous_scale=px.colors.sequential.Plasma # Better color scale for geo map
                         )
-                        fig_geo.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
+                        fig_geo.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0),
+                                             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                                             font_color='#E0E0E0',
+                                             geo=dict(bgcolor='rgba(0,0,0,0)', lakecolor='#1F3850', landcolor='#0F2035', # Customize map colors
+                                                      subunitcolor='#2C425C', countrycolor='#2C425C'))
                         st.plotly_chart(fig_geo, use_container_width=True)
                         st.markdown("#### Insight:")
                         for insight in get_insights("Geographical Engagement", df_filtered):
@@ -605,7 +650,7 @@ if uploaded_file is not None:
 
                 # --- Key Action Summary ---
                 with st.container():
-                    st.header("Ringkasan Strategi Kampanye & Tindakan Kunci") # Headline tanpa nomor
+                    st.header("Ringkasan Strategi Kampanye & Tindakan Kunci")
                     st.markdown(
                         """
                         Berdasarkan analisis data yang telah dilakukan, berikut adalah ringkasan strategi kampanye dan tindakan kunci yang direkomendasikan:
@@ -621,7 +666,7 @@ if uploaded_file is not None:
 
                 st.markdown("---")
                 # --- Export Data Button (di Sidebar) ---
-                st.sidebar.header("Ekspor Data") # Headline tanpa nomor
+                st.sidebar.header("Ekspor Data")
                 # Create a buffer to write to
                 buffer = io.BytesIO()
                 # Write DataFrame to Excel in the buffer
@@ -639,7 +684,7 @@ if uploaded_file is not None:
 
                 # --- Instructions for Downloading Dashboard (Main Content) ---
                 with st.container():
-                    st.header("Cara Mendapatkan Laporan Dashboard Anda") # Headline tanpa nomor
+                    st.header("Cara Mendapatkan Laporan Dashboard Anda")
                     st.markdown("""
                     Untuk mendapatkan salinan visual dari dashboard ini (termasuk grafik dan insight yang Anda lihat), Anda bisa menggunakan fitur **"Cetak ke PDF" bawaan browser** Anda:
 
@@ -659,4 +704,4 @@ else:
     st.info("Silakan unggah file CSV Anda di sidebar untuk memulai analisis.")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra Marriane")
+st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra")
