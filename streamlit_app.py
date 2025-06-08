@@ -542,8 +542,8 @@ if st.session_state.page == 'Home':
             position: relative;
             overflow: hidden; /* Important for any abstract shapes if added */
         ">
-            <h1 style="color: #FFFFFF; font-size: 5rem; margin-bottom: 0.5rem; line-height: 1;">Artificial</h1>
-            <h1 style="color: #4A90E2; font-size: 5rem; margin-top: 0; line-height: 1;">Intelligence</h1>
+            <h1 style="color: #FFFFFF; font-size: 5rem; margin-bottom: 0.5rem; line-height: 1;">Interactive</h1>
+            <h1 style="color: #4A90E2; font-size: 5rem; margin-top: 0; line-height: 1;">Analysis Dashboard</h1>
             <p style="font-size: 1.8rem; color: #B0C4DE; margin-top: 1.5rem;">Transforming the Future</p>
             <div style="margin-top: 3rem;">
                 <button class="stButton" style="
@@ -573,7 +573,7 @@ if st.session_state.page == 'Home':
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             ">
                 <span style="font-size: 1.5rem;">🌐</span>
-                Our Website reallygreatsite.com
+                Presented by @shannonsifra
             </div>
         </div>
     """, unsafe_allow_html=True)
