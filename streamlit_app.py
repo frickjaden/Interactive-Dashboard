@@ -8,7 +8,6 @@ import io
 import datetime
 
 # --- Helper Function to get Insights ---
-# Fungsi ini menghasilkan insight berdasarkan data yang difilter
 def get_insights(chart_title, df_filtered=None):
     insights = []
     if df_filtered is None or df_filtered.empty:
@@ -31,12 +30,11 @@ def get_insights(chart_title, df_filtered=None):
             insights.append("Data sentimen tidak cukup untuk analisis.")
 
     elif chart_title == "Engagement Trend over Time":
-        # Group by week and sum engagements
         df_filtered_weekly = df_filtered.groupby(df_filtered['date'].dt.to_period('W'))['engagements'].sum().reset_index()
-        df_filtered_weekly['date'] = df_filtered_weekly['date'].dt.start_time # Convert Period back to Timestamp for Plotly
+        df_filtered_weekly['date'] = df_filtered_weekly['date'].dt.start_time
 
         if not df_filtered_weekly.empty:
-            if not df_filtered_weekly['engagements'].empty: # Check if engagements column is not empty after grouping
+            if not df_filtered_weekly['engagements'].empty:
                 max_engagement_date = df_filtered_weekly.loc[df_filtered_weekly['engagements'].idxmax(), 'date']
                 min_engagement_date = df_filtered_weekly.loc[df_filtered_weekly['engagements'].idxmin(), 'date']
                 total_engagements = df_filtered_weekly['engagements'].sum()
@@ -67,7 +65,6 @@ def get_insights(chart_title, df_filtered=None):
                 insights.append("Diversifikasi *platform* penting untuk menjangkau audiens yang berbeda, namun alokasi sumber daya harus proporsional dengan performa *engagement*.")
         else:
             insights.append("Data *engagement* per *platform* tidak cukup untuk analisis.")
-
 
     elif chart_title == "Media Type Mix":
         media_type_counts = df_filtered['media_type'].value_counts(normalize=True).reset_index()
@@ -107,7 +104,6 @@ def get_insights(chart_title, df_filtered=None):
 
     elif chart_title == "Geographical Engagement":
         if not df_filtered.empty and 'location' in df_filtered.columns:
-            # Aggregate engagements by location
             location_engagements = df_filtered.groupby('location')['engagements'].sum().reset_index()
             location_engagements.columns = ['location', 'total_engagements']
             insights.append("Visualisasi geografis menunjukkan distribusi *engagement* berdasarkan lokasi.")
@@ -126,106 +122,137 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Custom CSS for a cleaner look (iPhone-like aesthetic) ---
+# --- Custom CSS for a modern, professional look ---
 st.markdown("""
 <style>
-    /* Global styles */
-    body {
+    /* General body and font styles */
+    html, body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-        background-color: #F8F8F8; /* Light gray background */
-        color: #333333; /* Default text color, ensuring black */
+        background-color: #F0F2F6; /* A very light, subtle grey for the background */
+        color: #1A1A1A; /* Dark almost-black for primary text */
     }
 
-    /* Main content container */
+    /* Main content area padding and width */
     .reportview-container .main .block-container {
         padding-top: 2rem;
-        padding-right: 2rem;
-        padding-left: 2rem;
+        padding-right: 3rem;
+        padding-left: 3rem;
         padding-bottom: 2rem;
-        max-width: 1200px; /* Limit width for cleaner look */
-        margin: auto;
+        max-width: 1300px; /* Slightly wider for more content */
+        margin: auto; /* Center alignment */
     }
 
-    /* Sidebar styles */
-    .css-1d391kg { /* sidebar background */
-        background-color: #FFFFFF; /* White sidebar background */
-        border-right: 1px solid #EDEDED;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Subtle shadow */
+    /* Sidebar styling */
+    .css-1d391kg { /* Target sidebar background */
+        background-color: #FFFFFF; /* Pure white sidebar */
+        border-right: 1px solid #EAEAEA; /* Light border for separation */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04); /* Subtle shadow for depth */
+        border-radius: 0 10px 10px 0; /* Rounded right corners only */
+    }
+    .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6 {
+        color: #1A1A1A; /* Darker headers in sidebar */
+    }
+    .css-1d391kg .stSelectbox > label, .css-1d391kg .stMultiSelect > label, .css-1d391kg .stDateInput > label {
+        color: #4A4A4A; /* Labels in sidebar */
+        font-weight: 500;
     }
 
-    /* Headers */
+    /* Headers throughout the app */
     h1 {
-        color: #1C1C1E; /* Darker header */
+        color: #1A1A1A;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        font-size: 2.5rem; /* Larger main title */
+        margin-bottom: 0.8rem;
     }
     h2 {
-        color: #2C2C2E;
+        color: #2A2A2A;
         font-weight: 600;
+        font-size: 1.8rem;
+        margin-top: 2.5rem;
+        margin-bottom: 1.2rem;
+    }
+    h3 {
+        color: #3A3A3A;
+        font-weight: 600;
+        font-size: 1.4rem;
         margin-top: 2rem;
         margin-bottom: 1rem;
     }
-    h3 {
-        color: #3C3C3E;
+    h4 { /* Used for Insight titles */
+        color: #4A4A4A;
         font-weight: 500;
+        font-size: 1.1rem;
         margin-top: 1.5rem;
         margin-bottom: 0.8rem;
-    }
-    h4 {
-        color: #4C4C4E; /* Slightly lighter for insights */
-        font-weight: 500;
-        margin-top: 1.5rem;
-        margin-bottom: 0.5rem;
     }
 
     /* Buttons */
     .stButton>button {
-        background-color: #007AFF; /* iPhone blue */
+        background-color: #007AFF; /* Apple Blue */
         color: white;
-        padding: 0.8rem 1.5rem;
-        border-radius: 8px; /* More rounded corners */
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px; /* More pronounced rounded corners */
         border: none;
         cursor: pointer;
         font-weight: 600;
-        transition: background-color 0.2s ease;
+        letter-spacing: 0.5px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2); /* Subtle blue shadow */
     }
     .stButton>button:hover {
-        background-color: #0056B3; /* Darker blue on hover */
+        background-color: #005BBF; /* Darker blue on hover */
+        transform: translateY(-1px); /* Slight lift effect */
+    }
+    .stButton>button:active {
+        background-color: #004080; /* Even darker on click */
+        transform: translateY(0);
     }
 
-    /* Alerts (Info, Warning, Success) */
+    /* Alerts (Info, Success, Warning, Error) */
     .stAlert {
-        border-radius: 8px;
-        padding: 1rem;
-        font-size: 0.9rem;
+        border-radius: 10px;
+        padding: 1.2rem;
+        font-size: 0.95rem;
+        border: none; /* Remove default border */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Subtle shadow */
     }
-    .stAlert.info { background-color: #E0F2F7; color: #2196F3; } /* Light blue */
-    .stAlert.success { background-color: #E8F5E9; color: #4CAF50; } /* Light green */
-    .stAlert.warning { background-color: #FFFDE7; color: #FFC107; } /* Light yellow */
+    .stAlert.info { background-color: #E6F3FF; color: #007AFF; } /* Light blue, Apple blue text */
+    .stAlert.success { background-color: #E8FDE7; color: #4CAF50; } /* Light green */
+    .stAlert.warning { background-color: #FFF9E0; color: #FFC107; } /* Light orange-yellow */
     .stAlert.error { background-color: #FFEBEE; color: #F44336; } /* Light red */
 
-
-    /* Text elements */
+    /* Markdown text, lists */
     .stMarkdown {
-        line-height: 1.6;
+        line-height: 1.7;
+        color: #3A3A3A;
     }
     .stMarkdown ul {
-        list-style-type: disc;
-        margin-left: 25px; /* Adjust indentation */
-        margin-bottom: 10px;
+        list-style-type: none; /* Remove default bullets */
+        padding-left: 0; /* Remove default padding */
+        margin-left: 0;
     }
     .stMarkdown li {
-        margin-bottom: 5px;
+        margin-bottom: 0.6rem;
+        position: relative;
+        padding-left: 1.5rem; /* Space for custom bullet */
+    }
+    .stMarkdown li::before {
+        content: "•"; /* Custom bullet point */
+        color: #007AFF; /* Apple blue bullet */
+        position: absolute;
+        left: 0;
+        font-weight: bold;
     }
 
-    /* Input widgets (sliders, multiselect, date input) */
+    /* Input widgets (multiselect, date input, slider) */
     .stMultiSelect, .stDateInput, .stSlider {
-        margin-bottom: 1rem;
+        margin-bottom: 1.2rem;
     }
     .stMultiSelect > div > div { /* Target the actual select box */
         border-radius: 8px;
         border: 1px solid #DDDDDD;
-        padding: 0.5rem;
+        padding: 0.6rem 0.8rem;
+        background-color: #FDFDFD; /* Slightly off-white input background */
     }
     .stMultiSelect > div > div:hover {
         border-color: #BBBBBB;
@@ -234,83 +261,110 @@ st.markdown("""
         border-color: #007AFF;
         box-shadow: 0 0 0 0.1rem rgba(0, 122, 255, 0.25);
     }
+    .stDateInput > div > label + div > div { /* Target date input styling */
+        border-radius: 8px;
+        border: 1px solid #DDDDDD;
+        padding: 0.6rem 0.8rem;
+        background-color: #FDFDFD;
+    }
 
     /* Metric (KPI) boxes */
     div[data-testid="stMetric"] {
-        background-color: #FFFFFF; /* White background for KPIs */
-        border-radius: 12px; /* More rounded */
-        padding: 1rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Stronger shadow for KPIs */
-        margin-bottom: 1.5rem;
+        background-color: #FFFFFF;
+        border-radius: 15px; /* More rounded, modern */
+        padding: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* More prominent, soft shadow */
+        margin-bottom: 2rem;
         text-align: center;
+        border: 1px solid #F0F0F0; /* Very subtle border */
     }
     div[data-testid="stMetricLabel"] {
-        font-size: 0.9rem;
-        color: #777777;
+        font-size: 1.0rem;
+        color: #6A6A6A;
         font-weight: 500;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.3rem;
+        text-transform: uppercase; /* Uppercase for labels */
+        letter-spacing: 0.8px;
     }
     div[data-testid="stMetricValue"] {
-        font-size: 2.8rem; /* Larger font for KPI numbers */
-        color: #1C1C1E; /* Dark text for KPI values */
+        font-size: 3.2rem; /* Even larger for impact */
+        color: #1A1A1A;
         font-weight: 700;
     }
 
     /* Expander style for filters */
     .streamlit-expanderContent {
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
     .streamlit-expander {
-        border-radius: 8px;
+        border-radius: 10px;
         border: 1px solid #EDEDED;
         background-color: #FFFFFF;
-        box-shadow: none; /* Remove default expander shadow */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Subtle shadow */
+        margin-bottom: 1.5rem;
     }
     .streamlit-expander > button { /* Adjust expander header */
         font-weight: 600;
         color: #333333;
+        padding: 0.8rem 1.2rem;
     }
 
     /* Dataframe style */
     .stDataFrame {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        border: 1px solid #E8E8E8;
+        overflow: hidden; /* Ensures rounded corners on inner table too */
     }
-    .stDataFrame > div > div {
-        border-radius: 8px; /* Apply to internal table if possible */
+    /* Make headers sticky and styling for dataframe headers */
+    .stDataFrame > div > div > div:nth-child(2) > div {
+        background-color: #F8F8F8; /* Light grey header */
+        font-weight: 600;
+        color: #3A3A3A;
     }
+
 
     /* Remove default Streamlit 'Made with Streamlit' footer */
     footer { visibility: hidden; }
 
-    /* Custom classes for spacing or card-like appearance */
-    .stContainer { /* Apply card styles to all st.container by default */
+    /* Custom container/card style - this will be applied to all st.container() */
+    .stContainer {
         background-color: #FFFFFF;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        color: #333333; /* Ensure text inside containers is black */
+        border-radius: 15px; /* Consistent rounded corners */
+        padding: 2rem; /* More generous padding */
+        margin-bottom: 2.5rem; /* More space between sections */
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08); /* Softer, larger shadow */
+        border: 1px solid #EFEFEF; /* Very light, almost invisible border */
+        color: #1A1A1A; /* Ensure main text color is dark */
     }
-    /* Specific styling for children within a container if needed */
-    .stContainer h1, .stContainer h2, .stContainer h3, .stContainer h4, .stContainer p, .stContainer ul, .stContainer li {
-        color: #1C1C1E; /* Ensure headers and text inside containers are dark */
+    /* Ensure headings inside containers also use dark colors */
+    .stContainer h1, .stContainer h2, .stContainer h3, .stContainer h4, .stContainer p {
+        color: #1A1A1A;
     }
 
+    /* Plotly chart container styling (for better integration) */
+    .js-plotly-plot {
+        border-radius: 12px;
+        overflow: hidden; /* Ensures plot doesn't bleed out of rounded corners */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid #F0F0F0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # --- Main Title ---
 st.title("📊 Media Intelligence Dashboard")
 st.markdown("""
-Selamat datang di Dashboard Analisis Kampanye Anda. Unggah file CSV untuk mendapatkan *insight* mendalam tentang performa media Anda.
+Selamat datang di Dashboard Analisis Kampanye Anda. Unggah file CSV untuk mendapatkan **insight mendalam** tentang performa media Anda dengan visualisasi yang interaktif dan *actionable insights*.
 """)
 st.markdown("---") # Garis pemisah
 
 # --- Bagian 1: Unggah & Pembersihan Data ---
-with st.container(): # Ini akan menjadi "kartu" putih pertama
-    st.header("1. Unggah File CSV Anda")
+with st.container():
+    st.header("1. Unggah Data Anda")
     uploaded_file = st.file_uploader(
         "Seret & Lepas atau Klik untuk Unggah file CSV Anda",
         type=["csv"],
@@ -320,19 +374,19 @@ with st.container(): # Ini akan menjadi "kartu" putih pertama
 df = None # Inisialisasi DataFrame menjadi None
 
 if uploaded_file is not None:
-    with st.spinner('Memproses file dan menyiapkan dashboard... Ini mungkin memerlukan beberapa detik.'): # Indikator loading yang lebih informatif
+    with st.spinner('Memproses file dan menyiapkan dashboard... Ini mungkin memerlukan beberapa detik.'):
         try:
             df = pd.read_csv(uploaded_file)
             st.success("File berhasil diunggah!")
 
-            with st.container(): # "Kartu" untuk Pembersihan Data
-                st.header("2. Pembersihan Data")
+            with st.container():
+                st.header("2. Pembersihan Data Otomatis")
                 st.markdown(
                     """
-                    Langkah-langkah pembersihan data yang dilakukan secara otomatis:
-                    -   Mengubah kolom **'Date'** ke format datetime.
+                    Sistem secara otomatis melakukan pembersihan data untuk memastikan analisis yang akurat:
+                    -   Mengubah kolom **'Date'** ke format tanggal yang standar.
                     -   Mengisi nilai **'Engagements'** yang kosong (missing) dengan 0.
-                    -   Menormalisasi nama kolom (mengubah ke huruf kecil dan mengganti spasi dengan garis bawah).
+                    -   Menormalisasi nama kolom (mengubah ke huruf kecil dan mengganti spasi dengan garis bawah) agar mudah diproses.
                     """
                 )
 
@@ -342,17 +396,18 @@ if uploaded_file is not None:
                 df['engagements'] = pd.to_numeric(df['engagements'], errors='coerce').fillna(0).astype(int)
                 df.dropna(subset=['date'], inplace=True)
 
-                st.success("Pembersihan data selesai!")
+                st.success("Pembersihan data selesai dan siap dianalisis!")
                 st.subheader("Pratinjau Data Setelah Dibersihkan:")
                 st.dataframe(df.head())
 
-            st.markdown("---")
-            st.header("3. Visualisasi Interaktif & Insight")
-            st.markdown("Gunakan filter di sidebar untuk menyesuaikan tampilan data dan mendapatkan *insight* yang spesifik.")
+            st.markdown("---") # Separator
+
+            st.header("3. Analisis Interaktif & Insight")
+            st.markdown("Gunakan filter di sidebar untuk menyesuaikan tampilan data dan mendapatkan **insight yang spesifik** sesuai kebutuhan Anda.")
 
             # --- Sidebar: Filters ---
             st.sidebar.header("Filter Data")
-            with st.sidebar.expander("Atur Filter Data Anda", expanded=True): # Expanded by default for better visibility
+            with st.sidebar.expander("Sesuaikan Filter Analisis Anda", expanded=True):
                 unique_platforms = ['Semua'] + df['platform'].unique().tolist()
                 selected_platforms = st.multiselect("Pilih Platform(s)", unique_platforms, default=['Semua'])
 
@@ -397,49 +452,51 @@ if uploaded_file is not None:
                 st.warning("Tidak ada data yang cocok dengan filter yang dipilih. Harap sesuaikan filter Anda atau unggah file CSV yang berbeda.")
             else:
                 # --- Dynamic KPIs ---
-                with st.container(): # "Kartu" untuk KPI
-                    st.subheader("3.0. Key Performance Indicators (KPIs)")
+                with st.container():
+                    st.subheader("3.1. Key Performance Indicators (KPIs)")
                     kpi1, kpi2, kpi3 = st.columns(3)
 
                     with kpi1:
                         total_engagements_kpi = df_filtered['engagements'].sum()
-                        st.metric(label="Total Engagements", value=f"{total_engagements_kpi:,.0f}")
-                        # You could add a delta here if comparing to a previous period
+                        st.metric(label="TOTAL ENGAGEMENTS", value=f"{total_engagements_kpi:,.0f}")
 
                     with kpi2:
                         unique_platforms_kpi = df_filtered['platform'].nunique()
-                        st.metric(label="Jumlah Platform Aktif", value=f"{unique_platforms_kpi}")
+                        st.metric(label="PLATFORM AKTIF", value=f"{unique_platforms_kpi}")
 
                     with kpi3:
                         num_data_points_kpi = len(df_filtered)
-                        st.metric(label="Jumlah Data Point", value=f"{num_data_points_kpi:,.0f}")
+                        st.metric(label="JUMLAH DATA POINTS", value=f"{num_data_points_kpi:,.0f}")
 
-                st.markdown("---") # Separator
+                # --- Visualizations Section ---
+                st.markdown("---")
+                st.subheader("3.2. Visualisasi Utama")
 
                 # --- Row 1: Sentiment Breakdown & Engagement Trend ---
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    with st.container(): # "Kartu" untuk Sentiment
-                        st.subheader("3.1. Pie Chart: Sentiment Breakdown")
+                    with st.container():
+                        st.write("### Distribusi Sentimen") # Use st.write for sub-sub-headers in containers
                         sentiment_counts = df_filtered['sentiment'].value_counts().reset_index()
                         sentiment_counts.columns = ['sentiment', 'count']
                         fig_sentiment = px.pie(sentiment_counts, values='count', names='sentiment',
                                                title='**Distribusi Sentimen**',
                                                color_discrete_sequence=px.colors.qualitative.Pastel)
-                        fig_sentiment.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0)) # Adjust margins
+                        fig_sentiment.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
                         st.plotly_chart(fig_sentiment, use_container_width=True)
                         st.markdown("#### Insight:")
                         for insight in get_insights("Sentiment Breakdown", df_filtered):
                             st.markdown(f"- {insight}")
 
                 with col2:
-                    with st.container(): # "Kartu" untuk Engagement Trend
-                        st.subheader("3.2. Line Chart: Engagement Trend over Time")
+                    with st.container():
+                        st.write("### Tren Engagement dari Waktu ke Waktu")
                         engagement_over_time = df_filtered.groupby(df_filtered['date'].dt.to_period('W'))['engagements'].sum().reset_index()
                         engagement_over_time['date'] = engagement_over_time['date'].dt.start_time
                         fig_engagement_trend = px.line(engagement_over_time, x='date', y='engagements',
-                                                     title='**Tren Engagement dari Waktu ke Waktu (Mingguan)**', markers=True)
+                                                     title='**Tren Engagement dari Waktu ke Waktu (Mingguan)**', markers=True,
+                                                     color_discrete_sequence=["#007AFF"]) # Use Apple Blue for line
                         fig_engagement_trend.update_xaxes(title_text='Tanggal (Awal Minggu)')
                         fig_engagement_trend.update_yaxes(title_text='Total Engagements')
                         fig_engagement_trend.update_layout(title_x=0.5, margin=dict(t=50, b=0, l=0, r=0))
@@ -448,14 +505,12 @@ if uploaded_file is not None:
                         for insight in get_insights("Engagement Trend over Time", df_filtered):
                             st.markdown(f"- {insight}")
 
-                st.markdown("---")
-
                 # --- Row 2: Platform Engagements & Media Type Mix ---
                 col3, col4 = st.columns(2)
 
                 with col3:
-                    with st.container(): # "Kartu" untuk Platform Engagements
-                        st.subheader("3.3. Bar Chart: Platform Engagements")
+                    with st.container():
+                        st.write("### Engagement per Platform")
                         platform_engagements = df_filtered.groupby('platform')['engagements'].sum().sort_values(ascending=True).reset_index()
                         fig_platform = px.bar(platform_engagements, x='engagements', y='platform', orientation='h',
                                              title='**Total Engagement per Platform**',
@@ -470,8 +525,8 @@ if uploaded_file is not None:
                             st.markdown(f"- {insight}")
 
                 with col4:
-                    with st.container(): # "Kartu" untuk Media Type Mix
-                        st.subheader("3.4. Pie Chart: Media Type Mix")
+                    with st.container():
+                        st.write("### Distribusi Tipe Media")
                         media_type_counts = df_filtered['media_type'].value_counts().reset_index()
                         media_type_counts.columns = ['media_type', 'count']
                         fig_media_type = px.pie(media_type_counts, values='count', names='media_type',
@@ -483,11 +538,9 @@ if uploaded_file is not None:
                         for insight in get_insights("Media Type Mix", df_filtered):
                             st.markdown(f"- {insight}")
 
-                st.markdown("---")
-
                 # --- Row 3: Top 5 Locations & Geographical Engagement ---
-                st.subheader("3.5. Top 5 Lokasi Berdasarkan Engagement")
-                with st.container(): # "Kartu" untuk Top Locations
+                with st.container():
+                    st.write("### Top 5 Lokasi Berdasarkan Engagement")
                     top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).sort_values(ascending=True).reset_index()
                     fig_locations = px.bar(top_locations, x='engagements', y='location', orientation='h',
                                           title='**Top 5 Lokasi Berdasarkan Total Engagement**',
@@ -501,9 +554,8 @@ if uploaded_file is not None:
                     for insight in get_insights("Top 5 Locations", df_filtered):
                         st.markdown(f"- {insight}")
 
-                # --- Geographical Map (Experimental - Requires valid location data) ---
-                st.subheader("3.6. Peta Engagement Geografis (Eksperimental)")
-                with st.container(): # "Kartu" untuk Peta Geografis
+                with st.container():
+                    st.write("### Peta Engagement Geografis (Eksperimental)")
                     st.info("Peta ini akan bekerja paling baik jika kolom 'Location' Anda berisi nama kota atau negara yang dapat dikenali oleh Plotly.")
                     try:
                         location_engagements_map = df_filtered.groupby('location')['engagements'].sum().reset_index()
@@ -533,13 +585,13 @@ if uploaded_file is not None:
                 st.markdown("---")
 
                 # --- Key Action Summary ---
-                st.header("4. Ringkasan Strategi Kampanye & Tindakan Kunci")
-                with st.container(): # "Kartu" untuk Ringkasan Strategi
+                with st.container():
+                    st.header("4. Ringkasan Strategi Kampanye & Tindakan Kunci")
                     st.markdown(
                         """
                         Berdasarkan analisis data yang telah dilakukan, berikut adalah ringkasan strategi kampanye dan tindakan kunci yang direkomendasikan:
 
-                        * **Fokus pada Konten Positif:** Terus kembangkan konten yang membangkitkan sentimen positif. Identifikasi elemen kunci dari konten yang berhasil dan replikasi.
+                        * **Fokus pada Konten Positif:** Terus kembangkan konten yang membangkitkan sentimen positif. Identifikasi elemen kunci dari konten yang berhasil dan replikasi kesuksesan.
                         * **Optimalkan Platform Unggulan:** Alokasikan lebih banyak sumber daya dan perhatian pada *platform* yang menunjukkan *engagement* tertinggi. Pertimbangkan strategi khusus untuk mempertahankan dan meningkatkan performa di *platform* tersebut.
                         * **Diversifikasi & Eksperimen Format Media:** Meskipun ada tipe media yang dominan, terus lakukan eksperimen dengan format media lain untuk melihat respon audiens yang berbeda dan menjangkau segmen baru.
                         * **Targetkan Lokasi Kunci:** Fokuskan upaya pemasaran dan distribusi konten di lokasi-lokasi dengan *engagement* tertinggi. Pertimbangkan konten atau kampanye yang terlokalisasi untuk area ini.
@@ -567,10 +619,10 @@ if uploaded_file is not None:
                 st.sidebar.info("Data yang diunduh akan sesuai dengan filter yang Anda pilih di dashboard.")
 
                 # --- Instructions for Downloading Dashboard (Main Content) ---
-                with st.container(): # "Kartu" untuk Cara Download
-                    st.header("Cara Mendapatkan Laporan Dashboard Anda")
+                with st.container():
+                    st.header("6. Cara Mendapatkan Laporan Dashboard Anda")
                     st.markdown("""
-                    Untuk mendapatkan salinan visual dari dashboard ini (termasuk grafik dan insight yang Anda lihat), Anda bisa menggunakan fitur "Cetak ke PDF" bawaan browser Anda:
+                    Untuk mendapatkan salinan visual dari dashboard ini (termasuk grafik dan insight yang Anda lihat), Anda bisa menggunakan fitur **"Cetak ke PDF" bawaan browser** Anda:
 
                     1.  Tekan **`Ctrl + P`** (Windows/Linux) atau **`Cmd + P`** (Mac) pada keyboard Anda.
                     2.  Pada dialog cetak yang muncul, pilih tujuan (**"Save as PDF"** atau **"Print to PDF"**).
