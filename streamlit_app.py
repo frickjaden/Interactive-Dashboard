@@ -467,7 +467,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     # Logo/Title placeholder
-    st.markdown("<h2 style='text-align: center; color: #FFFFFF;'>Your Logo Here</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: #FFFFFF;'>Interactive Analysis Dashboard Here</h2>", unsafe_allow_html=True)
     st.markdown("---")
 
     # Navigation buttons (using st.radio to manage active state)
@@ -501,7 +501,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("<h4 style='text-align: center; color: #A0A0A0;'>Presented by</h4>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; color: #FFFFFF;'>Your Name/Team</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #FFFFFF;'>Shannon Sifra</h3>", unsafe_allow_html=True)
 
 # --- Main Content Area ---
 
@@ -518,21 +518,6 @@ if st.session_state.page == 'Home':
             position: relative;
             overflow: hidden; /* Important for any abstract shapes if added */
         ">
-            <h1 style="color: #FFFFFF; font-size: 5rem; margin-bottom: 0.5rem; line-height: 1;">Interactive</h1>
-            <h1 style="color: #4A90E2; font-size: 5rem; margin-top: 0; line-height: 1;">Analysis Dashboard</h1>
-            <p style="font-size: 1.8rem; color: #B0C4DE; margin-top: 1.5rem;">Transforming the Future</p>
-            <div style="margin-top: 3rem;">
-                <button class="stButton" style="
-                    background-color: #4CAF50; /* Green button */
-                    color: white;
-                    padding: 1rem 2.5rem;
-                    border-radius: 15px;
-                    border: none;
-                    font-size: 1.3rem;
-                    cursor: pointer;
-                    transition: background-color 0.2s, transform 0.1s;
-                    box-shadow: 0 5px 15px rgba(0,255,0,0.3);
-                ">Start Slide</button>
             </div>
             <div style="
                 background-color: rgba(26, 46, 68, 0.7); /* Slightly transparent dark blue */
