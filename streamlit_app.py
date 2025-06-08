@@ -236,6 +236,30 @@ st.markdown("""
         margin-top: 1.5rem;
         margin-bottom: 0.6rem;
     }
+    
+    /* Buttons (e.g., "Start Slide" or "Upload") */
+    .stButton>button {
+        background-color: #4CAF50; /* Green for main action buttons */
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 12px; /* Slightly more rounded */
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        box-shadow: 0 5px 15px rgba(0,255,0,0.25); /* Greenish shadow */
+        font-size: 1.1rem; /* Larger button text */
+    }
+    .stButton>button:hover {
+        background-color: #45a049;
+        transform: translateY(-3px);
+    }
+    .stButton>button:active {
+        background-color: #3e8e41;
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0,255,0,0.3);
+    }
 
     /* Alerts (Info, Success, Warning, Error) */
     .stAlert {
@@ -466,8 +490,8 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-    # Logo/Title placeholder
-    st.markdown("<h2 style='text-align: center; color: #FFFFFF;'>Interactive Analysis Dashboard Here</h2>", unsafe_allow_html=True)
+    # Logo/Title placeholder - UPDATED HERE
+    st.markdown("<h2 style='text-align: center; color: #FFFFFF;'>Interactive Analysis Dashboard</h2>", unsafe_allow_html=True)
     st.markdown("---")
 
     # Navigation buttons (using st.radio to manage active state)
@@ -518,6 +542,21 @@ if st.session_state.page == 'Home':
             position: relative;
             overflow: hidden; /* Important for any abstract shapes if added */
         ">
+            <h1 style="color: #FFFFFF; font-size: 5rem; margin-bottom: 0.5rem; line-height: 1;">Interactive</h1>
+            <h1 style="color: #4A90E2; font-size: 5rem; margin-top: 0; line-height: 1;">Analysis</h1>
+            <p style="font-size: 1.8rem; color: #B0C4DE; margin-top: 1.5rem;">Dashboard</p>
+            <div style="margin-top: 3rem;">
+                <button class="stButton" style="
+                    background-color: #4CAF50; /* Green button */
+                    color: white;
+                    padding: 1rem 2.5rem;
+                    border-radius: 15px;
+                    border: none;
+                    font-size: 1.3rem;
+                    cursor: pointer;
+                    transition: background-color 0.2s, transform 0.1s;
+                    box-shadow: 0 5px 15px rgba(0,255,0,0.3);
+                ">Start Analysis</button>
             </div>
             <div style="
                 background-color: rgba(26, 46, 68, 0.7); /* Slightly transparent dark blue */
@@ -883,4 +922,4 @@ elif st.session_state.page == 'Contact':
     st.success("Terima kasih telah mengunjungi dashboard kami!")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Dibuat dengan ❤️ oleh Shannon Sifra 2306221705")
+st.sidebar.markdown("Dibuat dengan ❤️ oleh [Nama Kelompok Anda/Nama Anda]")
