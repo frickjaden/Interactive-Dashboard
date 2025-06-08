@@ -15,7 +15,7 @@ def get_insights(chart_title, df_filtered=None):
     insights = {
         "Dashboard Overview": "Ringkasan metrik utama menunjukkan kinerja media yang stabil dengan jangkauan dan sentimen yang positif secara keseluruhan.",
         "Headline Analysis": "Analisis judul menunjukkan tren dominasi topik tertentu dan sentimen yang terkait dengan narasi tersebut.",
-        "Keyword Trends": "Kata kunci yang sedang tren mengindikasikan area minat publik dan topik yang paling sering dibahas di media.",
+        "Keyword Trends": "Kata kunci yang sedang tren mengindikasikan area minat publik dan publikasi yang paling sering dibahas di media.",
         "Sentiment Over Time": "Sentimen dari waktu ke waktu menunjukkan fluktuasi yang perlu dipantau untuk memahami dampak peristiwa atau kampanye.",
         "Source Performance": "Beberapa sumber media memiliki dampak yang lebih besar pada sentimen atau jangkauan, mengindikasikan pentingnya kemitraan strategis.",
         "Media Reach": "Jangkauan media yang terus meningkat menunjukkan keberhasilan dalam menjangkau audiens yang lebih luas.",
@@ -97,13 +97,15 @@ if st.session_state.page == 'Home':
         <div class="stContainer">
             <h3>Overview</h3>
             <p>Aplikasi ini dirancang untuk membantu Anda memahami lanskap media, melacak tren, dan mengidentifikasi wawasan utama dari data berita dan publikasi.</p>
-            <p>Pilih "Upload Data" dari sidebar untuk memulai dengan data Anda sendiri.</p>
+            <p>Untuk memulai, unggah data Anda.</p>
             <br>
-            <a href="#upload-data" style="text-decoration: none;">
-                <button class="hero-button">Mulai Analisis</button>
-            </a>
         </div>
-    """, unsafe_allow_html=True) # Menggunakan tombol HTML dengan kelas CSS
+    """, unsafe_allow_html=True)
+
+    # Button to navigate to Upload Data page
+    if st.button("Mulai Analisis", key="start_analysis_button"):
+        st.session_state.page = 'Upload Data'
+        st.experimental_rerun() # Rerun to navigate to the new page
 
     st.subheader("Fitur Utama:")
     col1, col2 = st.columns(2)
@@ -124,27 +126,34 @@ if st.session_state.page == 'Home':
 # Page: Upload Data
 elif st.session_state.page == 'Upload Data':
     st.title("Unggah Data Anda")
-    st.markdown("Unggah file Excel Anda di sini untuk memulai analisis.")
+    st.markdown("Unggah file Excel (.xlsx) atau CSV (.csv) Anda di sini untuk memulai analisis.")
 
-    # Add an ID to the file uploader for potential CSS targeting
-    st.markdown('<a name="upload-data"></a>', unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("Pilih file Excel", type=["xlsx"])
+    uploaded_file = st.file_uploader("Pilih file data", type=["xlsx", "csv"])
 
     if uploaded_file is not None:
         try:
-            df = pd.read_excel(uploaded_file)
-            st.session_state.df = df # Store DataFrame in session_state
-            st.success("File berhasil diunggah!")
-            st.write("Pratinjau Data:")
-            st.dataframe(df.head())
+            # Determine file type and read accordingly
+            if uploaded_file.name.endswith('.xlsx'):
+                df = pd.read_excel(uploaded_file)
+            elif uploaded_file.name.endswith('.csv'):
+                df = pd.read_csv(uploaded_file)
+            else:
+                st.error("Format file tidak didukung. Harap unggah file .xlsx atau .csv.")
+                df = None # Set df to None if format is not supported
 
-            # Optionally, move to Dashboard Overview after upload
-            if st.button("Lihat Dashboard"):
-                st.session_state.page = 'Dashboard Overview'
-                st.experimental_rerun() # Rerun to navigate to the new page
+            if df is not None:
+                st.session_state.df = df # Store DataFrame in session_state
+                st.success("File berhasil diunggah!")
+                st.write("Pratinjau Data:")
+                st.dataframe(df.head())
+
+                # Optionally, move to Dashboard Overview after upload
+                if st.button("Lihat Dashboard", key="view_dashboard_button"):
+                    st.session_state.page = 'Dashboard Overview'
+                    st.experimental_rerun() # Rerun to navigate to the new page
         except Exception as e:
             st.error(f"Terjadi kesalahan saat membaca file: {e}")
-            st.info("Pastikan file Excel Anda berformat benar dan tidak rusak.")
+            st.info("Pastikan file Anda berformat benar dan tidak rusak, serta sesuai dengan ekspektasi kolom.")
 
 # All subsequent pages require data
 if 'df' not in st.session_state or st.session_state.df.empty: # Check if df exists AND is not empty
@@ -152,7 +161,7 @@ if 'df' not in st.session_state or st.session_state.df.empty: # Check if df exis
         st.warning("Silakan unggah data Anda terlebih dahulu di halaman 'Upload Data'.")
         st.stop() # Stop execution if data is not available for analysis pages
     else:
-        df = pd.DataFrame() # Ensure df is defined as empty for non-data pages
+        df = pd.DataFrame() # Ensure df is defined as empty for non-data pages if no data
 else:
     df = st.session_state.get('df') # Get DataFrame from session state for analysis pages
 
@@ -340,8 +349,13 @@ else:
                 st.write("*(Untuk visualisasi tren kata kunci seiring waktu, Anda dapat membuat area chart atau line chart yang menampilkan frekuensi kata kunci teratas per periode waktu.)*")
 
                 # Example of a simple keyword count trend (might need refinement based on your data)
-                all_keywords = df_filtered.assign(Keyword=df_filtered['Keywords'].str.split(', ')).explode('Keyword')
-                if not all_keywords.empty:
+                # Ensure 'Keywords' column is string and then split
+                all_keywords = df_filtered.assign(Keyword=df_filtered['Keywords'].astype(str).str.split(', ')).explode('Keyword')
+                if not all_keywords.empty and 'Date' in all_keywords.columns:
+                    # Drop any rows where Keyword is empty string from splitting
+                    all_keywords = all_keywords[all_keywords['Keyword'].str.strip() != '']
+                    all_keywords['Date'] = pd.to_datetime(all_keywords['Date']) # Ensure Date is datetime
+
                     keyword_daily_counts = all_keywords.groupby([pd.Grouper(key='Date', freq='D'), 'Keyword']).size().reset_index(name='Count')
                     top_keywords_overall = keyword_daily_counts.groupby('Keyword')['Count'].sum().nlargest(5).index.tolist()
 
@@ -397,7 +411,8 @@ else:
 
                 # Define consistent order for sentiment columns and colors
                 sentiment_order = ['Positive', 'Neutral', 'Negative']
-                sentiment_daily = sentiment_daily[sentiment_order] # Reorder columns
+                # Reindex to ensure all sentiment types are present, filling missing with 0
+                sentiment_daily = sentiment_daily.reindex(columns=sentiment_order, fill_value=0)
 
                 fig_sentiment_time = px.area(
                     sentiment_daily,
@@ -551,9 +566,9 @@ else:
         st.markdown("""
             ### Pertanyaan Umum
             - **Bagaimana cara mengunggah data?**
-              Pilih opsi "Upload Data" dari menu sidebar, lalu klik "Pilih file Excel" untuk memilih file Anda.
+              Pilih opsi "Upload Data" dari menu sidebar, lalu klik "Pilih file data" untuk memilih file Anda. Anda dapat mengunggah file Excel (.xlsx) atau CSV (.csv).
             - **Format data yang didukung?**
-              Saat ini hanya mendukung file Excel (.xlsx) dengan kolom yang relevan seperti **'Date'**, **'Headline'**, **'Sentiment'** (e.g., 'Positive', 'Negative', 'Neutral'), **'Keywords'** (comma-separated), **'Source'**, **'Sentiment_Score'** (numeric), dan **'Reach'** (numeric). Pastikan nama kolom Anda sesuai.
+              Saat ini mendukung file Excel (.xlsx) dan CSV (.csv) dengan kolom yang relevan seperti **'Date'**, **'Headline'**, **'Sentiment'** (e.g., 'Positive', 'Negative', 'Neutral'), **'Keywords'** (comma-separated), **'Source'**, **'Sentiment_Score'** (numeric), dan **'Reach'** (numeric). Pastikan nama kolom Anda sesuai.
             - **Bagaimana cara mendapatkan wawasan dari dashboard?**
               Setiap visualisasi dilengkapi dengan penjelasan singkat (insights) di bawahnya. Anda juga dapat menggunakan filter di bagian atas halaman analisis untuk mengeksplorasi data lebih dalam.
             ---
