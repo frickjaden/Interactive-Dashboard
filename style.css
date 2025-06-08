@@ -1,0 +1,339 @@
+/* style.css */
+
+/* Main Background and overall text color */
+html, body, .stApp {
+    background-color: #0F1C3F; /* Darker blue for overall background */
+    color: #E0E0E0; /* Light grey for general text */
+    font-family: 'Segoe UI', sans-serif; /* A bit more modern font */
+}
+
+/* Target the main content area */
+.reportview-container .main .block-container {
+    padding-top: 2.5rem;
+    padding-right: 3rem;
+    padding-left: 3rem;
+    padding-bottom: 2.5rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Sidebar Styling (Left Column - The "Capsule" area) */
+.css-1d391kg { /* This is the main sidebar div (may vary slightly with Streamlit versions) */
+    background-color: #1A2E44; /* Darker blue for sidebar background */
+    border-right: 2px solid #2C425C; /* More prominent border */
+    box-shadow: 4px 0 15px rgba(0,0,0,0.3); /* Stronger shadow */
+    border-radius: 0 15px 15px 0; /* Rounded right corners */
+    width: 250px !important; /* Make sidebar wider */
+    flex: 0 0 250px !important; /* Fix width so content pushes right */
+}
+
+/* Adjust main content to start after the wider sidebar */
+.reportview-container .main {
+    margin-left: 250px; /* Offset main content by sidebar width */
+}
+
+/* Sidebar Header/Title */
+.css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6 {
+    color: #FFFFFF; /* White for headers in sidebar */
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #2C425C;
+    margin-bottom: 1.5rem;
+}
+
+/* Sidebar Nav Buttons (The "Capsules") */
+/* Targeting st.radio and st.button elements within sidebar */
+.st-emotion-cache-16txt5c .stRadio, .st-emotion-cache-16txt5c .stButton { /* Specificity for sidebar elements */
+    padding: 0 1rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Individual radio buttons (used for navigation) */
+/* The specific class for radio options can change with Streamlit updates.
+   As of recent versions, it might be related to .st-af or .st-bg.
+   You may need to inspect the element in your browser's developer tools. */
+.st-emotion-cache-16txt5c .stRadio div[data-testid*="stFormSubmitButton"], /* Target radio button parent if it's a form submit btn */
+.st-emotion-cache-16txt5c .stRadio div.st-af, /* Common class for radio options */
+.st-emotion-cache-16txt5c .stRadio .css-1d391kg .st-ag { /* Another potential target for radio options */
+    background-color: transparent; /* Default transparent */
+    border-radius: 12px; /* Pill shape */
+    padding: 0.75rem 1rem; /* Padding for the capsule */
+    transition: background-color 0.2s, color 0.2s, transform 0.1s;
+    display: flex; /* For icon and text alignment */
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    cursor: pointer;
+    color: #B0C4DE; /* Light blue text for nav items */
+    font-weight: 500;
+}
+
+/* Hover effect for sidebar nav buttons */
+.st-emotion-cache-16txt5c .stRadio div[data-testid*="stFormSubmitButton"]:hover,
+.st-emotion-cache-16txt5c .stRadio div.st-af:hover,
+.st-emotion-cache-16txt5c .stRadio .css-1d391kg .st-ag:hover {
+    background-color: #2C425C; /* Darker blue on hover */
+    color: #FFFFFF; /* White text on hover */
+    transform: translateY(-2px);
+}
+
+/* Active state for sidebar nav buttons (if st.radio is used) */
+.st-emotion-cache-16txt5c .stRadio div.st-af.st-am, /* Common active class */
+.st-emotion-cache-16txt5c .stRadio .css-1d391kg .st-ag.st-am { /* Another potential active class */
+    background-color: #4A90E2; /* Bright blue for active */
+    color: #FFFFFF; /* White text for active */
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(74, 144, 226, 0.4);
+}
+.st-emotion-cache-16txt5c .stRadio div.st-af.st-am:hover,
+.st-emotion-cache-16txt5c .stRadio .css-1d391kg .st-ag.st-am:hover { /* Active hover */
+    background-color: #3A7CC7;
+}
+
+
+/* Main Headers */
+h1 {
+    color: #FFFFFF; /* White for main title */
+    font-weight: 800; /* Extra bold */
+    font-size: 3.5rem; /* Even larger main title */
+    margin-bottom: 0.5rem;
+}
+h2 {
+    color: #B0C4DE; /* Light blue for section titles (subtitle effect) */
+    font-weight: 600;
+    font-size: 2.5rem; /* Larger sub-titles */
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+h3 {
+    color: #F0F0F0; /* Light grey for sub-headers */
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 0.8rem;
+}
+h4 { /* Used for Insight titles */
+    color: #A0A0A0;
+    font-weight: 500;
+    font-size: 1.3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Buttons (e.g., "Start Slide" or "Upload") */
+.stButton>button {
+    background-color: #4CAF50; /* Green for main action buttons */
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 12px; /* Slightly more rounded */
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 5px 15px rgba(0,255,0,0.25); /* Greenish shadow */
+    font-size: 1.1rem; /* Larger button text */
+}
+.stButton>button:hover {
+    background-color: #45a049;
+    transform: translateY(-3px);
+}
+.stButton>button:active {
+    background-color: #3e8e41;
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0,255,0,0.3);
+}
+
+/* Alerts (Info, Success, Warning, Error) */
+.stAlert {
+    border-radius: 10px;
+    padding: 1.2rem;
+    font-size: 0.95rem;
+    border: 1px solid;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stAlert.info { background-color: #1F3850; border-color: #4A90E2; color: #E0E0E0; }
+.stAlert.success { background-color: #2F4D3C; border-color: #4CAF50; color: #E0E0E0; }
+.stAlert.warning { background-color: #5C4A28; border-color: #FFA000; color: #E0E0E0; }
+.stAlert.error { background-color: #5C2828; border-color: #D32F2F; color: #E0E0E0; }
+
+/* Markdown text, lists */
+.stMarkdown {
+    line-height: 1.7;
+    color: #C0C0C0; /* Lighter grey for body text */
+}
+.stMarkdown ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+.stMarkdown li {
+    margin-bottom: 0.6rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+.stMarkdown li::before {
+    content: "•";
+    color: #4A90E2; /* Lighter blue bullet */
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+/* Input widgets (multiselect, date input, slider, file uploader) */
+.stMultiSelect, .stDateInput, .stSlider, .stFileUploader {
+    margin-bottom: 1.5rem;
+    color: #E0E0E0; /* Text color for labels */
+}
+.stMultiSelect > div > div, .stDateInput > div > label + div > div, .stFileUploader > div > div {
+    border-radius: 8px;
+    border: 1px solid #2C425C;
+    padding: 0.7rem 1rem;
+    background-color: #1A2E44;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    color: #E0E0E0; /* Text in inputs */
+}
+.stMultiSelect > div > div:hover, .stDateInput > div > label + div > div:hover, .stFileUploader > div > div:hover {
+    border-color: #4A90E2;
+}
+.stMultiSelect > div > div:focus-within, .stDateInput > div > label + div > div:focus-within, .stFileUploader > div > div:focus-within {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+}
+.stMultiSelect span, .stDateInput .flatpickr-day, .stDateInput .current-month, .stFileUploader label {
+    color: #E0E0E0 !important;
+}
+.stSlider .st-fx { background: #2C425C; }
+.stSlider .st-ey { background: #4A90E2; border-color: #4A90E2; }
+
+/* Metric (KPI) boxes */
+div[data-testid="stMetric"] {
+    background-color: #1A2E44;
+    border-radius: 15px;
+    padding: 1.8rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    margin-bottom: 2rem;
+    text-align: center;
+    border: 1px solid #2C425C;
+    transition: transform 0.2s ease;
+}
+div[data-testid="stMetric"]:hover { transform: translateY(-3px); }
+div[data-testid="stMetricLabel"] {
+    font-size: 1.05rem;
+    color: #A0A0A0;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+div[data-testid="stMetricValue"] {
+    font-size: 3.5rem;
+    color: #4A90E2;
+    font-weight: 700;
+}
+
+/* Expander style for filters */
+.streamlit-expanderContent { padding: 1.5rem; }
+.streamlit-expander {
+    border-radius: 12px;
+    border: 1px solid #2C425C;
+    background-color: #1A2E44;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    margin-bottom: 1.5rem;
+}
+.streamlit-expander > button {
+    font-weight: 600;
+    color: #F0F0F0;
+    padding: 1rem 1.2rem;
+}
+
+/* Dataframe style */
+.stDataFrame {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border: 1px solid #2C425C;
+    overflow: hidden;
+}
+.stDataFrame > div > div > div:nth-child(2) > div {
+    background-color: #1A2E44;
+    font-weight: 600;
+    color: #F0F0F0;
+}
+.stDataFrame table th { background-color: #1A2E44 !important; color: #F0F0F0 !important; border-bottom: 1px solid #2C425C !important; }
+.stDataFrame table td { background-color: #0F1C3F !important; color: #E0E0E0 !important; border-bottom: 1px solid #2C425C !important; }
+.stDataFrame table tr:nth-child(even) td { background-color: #12253B !important; }
+
+
+/* Remove default Streamlit 'Made with Streamlit' footer */
+footer { visibility: hidden; }
+
+/* Custom container/card style */
+.stContainer {
+    background-color: #1A2E44; /* Darker blue for cards */
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    border: 1px solid #2C425C;
+    color: #E0E0E0;
+}
+.stContainer h1, .stContainer h2, .stContainer h3, .stContainer h4, .stContainer p {
+    color: #F0F0F0;
+}
+
+/* Plotly chart container styling for dark mode */
+.stPlotlyChart {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border: 1px solid #2C425C;
+    background-color: #0F1C3F; /* Darker background for chart area itself */
+    min-height: 400px;
+    display: block;
+}
+.js-plotly-plot .plotly-graph-div {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+.js-plotly-plot[data-dash-is-current='true'] > .plotly > .main-svg {
+    margin: auto !important;
+}
+
+/* Plotly specific text colors for dark theme */
+.modebar, .g-gtitle, .g-xtitle, .g-ytitle, .xtick, .ytick, .g-colorbar-title, .g-colorbar-label {
+    fill: #E0E0E0 !important; /* White/light grey for all Plotly text */
+    color: #E0E0E0 !important;
+}
+.plot-container.plotly-graph-div .crisp { /* Plotly axis lines, grid lines */
+    stroke: #404040 !important; /* Darker grey for grid lines */
+}
+.plot-container.plotly-graph-div .axis-line { /* Plotly axis lines */
+    stroke: #606060 !important;
+}
+.plot-container.plotly-graph-div .plot .contour {
+    fill: #E0E0E0 !important;
+}
+.plot-container.plotly-graph-div .plot .surface .fill {
+    fill: #E0E0E0 !important;
+}
+
+/* Additional styles for the hero section button if needed */
+.hero-button {
+    background-color: #4CAF50; /* Green button */
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 15px;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 5px 15px rgba(0,255,0,0.3);
+}
+
+.hero-button:hover {
+    background-color: #45a049;
+    transform: translateY(-3px);
+}
