@@ -912,10 +912,9 @@ elif st.session_state.page == 'Contact':
     st.markdown("""
         Jika Anda memiliki pertanyaan, saran, atau ingin berkolaborasi, jangan ragu untuk menghubungi kami:
 
-        * **Email:** your.email@example.com
-        * **LinkedIn:** [Your LinkedIn Profile](https://www.linkedin.com/in/yourprofile)
-        * **GitHub:** [Your GitHub Profile](https://github.com/yourgithub)
-
+        * **Email:** shannonsifra@gmail.com
+        * **LinkedIn:** Shannon Sifra
+        * **GitHub:** Frickjaden
         Kami akan senang mendengar dari Anda!
     """)
     st.markdown("---")
