@@ -8,19 +8,170 @@ import io
 import datetime
 
 # --- Helper Function to get Insights ---
-def get_insights(chart_title, df_filtered=None):
-    insights = {
-        "Data Overview": "Bagian ini menyajikan gambaran menyeluruh dari data media Anda, mencakup sentimen, tren, dan jangkauan.",
-        "Distribusi Sentimen": "Distribusi sentimen berdasarkan artikel memberikan gambaran cepat tentang proporsi pandangan positif, negatif, dan netral secara keseluruhan.",
-        "Kata Kunci Teratas": "Visualisasi kata kunci teratas menyoroti fokus utama diskusi dan isu yang paling relevan dalam dataset Anda.",
-        "Tren Sentimen Harian": "Tren sentimen dari waktu ke waktu menunjukkan fluktuasi yang perlu dipantau untuk memahami dampak peristiwa atau kampanye.",
-        "Sentimen Berdasarkan Sumber": "Beberapa sumber media memiliki dampak yang lebih besar pada sentimen, mengindikasikan pentingnya menganalisis asal liputan.",
-        "Total Jangkauan Harian": "Jangkauan media yang terus meningkat menunjukkan keberhasilan dalam menjangkau audiens yang lebih luas seiring waktu.",
-        "Total Artikel": "Angka total artikel menunjukkan volume liputan media yang diterima dalam periode yang dipilih.",
-        "Rata-rata Sentimen": "Rata-rata sentimen memberikan indikator numerik singkat tentang keseluruhan nada liputan media.",
-        "Sumber Unik": "Jumlah sumber unik menunjukkan keberagaman atau konsentrasi sumber yang meliput topik Anda."
-    }
-    return insights.get(chart_title, "Tidak ada wawasan spesifik yang tersedia untuk grafik ini.")
+# REVISI BESAR DI FUNGSI INI UNTUK INSIGHTS DINAMIS
+def get_insights(chart_title, df_filtered):
+    insights = [] # List untuk menyimpan insight
+
+    if df_filtered.empty:
+        return ["Tidak ada data yang tersedia untuk menghasilkan wawasan."]
+
+    if chart_title == "Total Artikel":
+        total_articles = len(df_filtered)
+        insights.append(f"Total liputan media dalam periode ini adalah **{total_articles:,} artikel**.")
+        if total_articles == 0:
+            insights.append("Tidak ada artikel yang cocok dengan filter yang diterapkan.")
+        elif total_articles < 100:
+            insights.append("Volume liputan tergolong rendah, mungkin menandakan cakupan terbatas atau periode tenang.")
+        else:
+            insights.append("Volume liputan signifikan, menunjukkan aktivitas media yang tinggi.")
+
+    elif chart_title == "Rata-rata Sentimen":
+        if 'Sentiment_Score' in df_filtered.columns and not df_filtered['Sentiment_Score'].isnull().all():
+            avg_sentiment_score = df_filtered['Sentiment_Score'].mean()
+            insights.append(f"Rata-rata skor sentimen keseluruhan adalah **{avg_sentiment_score:.2f}**.")
+            if avg_sentiment_score > 0.5:
+                insights.append("Sentimen cenderung sangat positif.")
+            elif avg_sentiment_score > 0.1:
+                insights.append("Sentimen keseluruhan cenderung positif.")
+            elif avg_sentiment_score < -0.1:
+                insights.append("Sentimen keseluruhan cenderung negatif.")
+            else:
+                insights.append("Sentimen cenderung netral atau seimbang.")
+        else:
+            insights.append("Kolom 'Sentiment_Score' tidak ditemukan atau kosong untuk analisis sentimen.")
+
+    elif chart_title == "Sumber Unik":
+        if 'Source' in df_filtered.columns and not df_filtered['Source'].isnull().all():
+            unique_sources = df_filtered['Source'].nunique()
+            insights.append(f"Ada **{unique_sources:,} sumber media unik** yang berkontribusi pada liputan ini.")
+            if unique_sources < 10:
+                insights.append("Liputan terkonsentrasi pada beberapa sumber utama.")
+            else:
+                insights.append("Liputan berasal dari beragam sumber media.")
+        else:
+            insights.append("Kolom 'Source' tidak ditemukan atau kosong untuk analisis sumber.")
+
+    elif chart_title == "Distribusi Sentimen":
+        if 'Sentiment' in df_filtered.columns and not df_filtered['Sentiment'].isnull().all():
+            sentiment_counts = df_filtered['Sentiment'].value_counts(normalize=True) * 100
+            positive_pct = sentiment_counts.get('Positive', 0)
+            negative_pct = sentiment_counts.get('Negative', 0)
+            neutral_pct = sentiment_counts.get('Neutral', 0)
+
+            insights.append(f"Distribusi sentimen: Positif **{positive_pct:.1f}%**, Negatif **{negative_pct:.1f}%**, Netral **{neutral_pct:.1f}%**.")
+
+            if positive_pct > negative_pct and positive_pct > neutral_pct:
+                insights.append("Mayoritas liputan memiliki sentimen positif, menunjukkan persepsi yang baik.")
+            elif negative_pct > positive_pct and negative_pct > neutral_pct:
+                insights.append("Sentimen negatif mendominasi, menunjukkan potensi krisis atau isu yang perlu ditangani.")
+            elif neutral_pct > positive_pct and neutral_pct > negative_pct:
+                insights.append("Sentimen netral adalah yang paling dominan, mungkin berarti liputan informatif tanpa bias kuat.")
+            else:
+                insights.append("Distribusi sentimen cukup seimbang antara kategori.")
+        else:
+            insights.append("Kolom 'Sentiment' tidak ditemukan atau kosong untuk distribusi sentimen.")
+
+    elif chart_title == "Kata Kunci Teratas":
+        if 'Keywords' in df_filtered.columns and not df_filtered['Keywords'].isnull().all():
+            all_keywords = df_filtered['Keywords'].dropna().astype(str).str.split(', ').explode()
+            all_keywords = all_keywords[all_keywords.str.strip() != '']
+            if not all_keywords.empty:
+                keyword_counts = all_keywords.value_counts().head(3)
+                if not keyword_counts.empty:
+                    top_keywords_str = ", ".join([f"'{k}' ({v} kali)" for k, v in keyword_counts.items()])
+                    insights.append(f"Tiga kata kunci teratas adalah: **{top_keywords_str}**.")
+                    insights.append("Ini menunjukkan topik-topik paling relevan yang dibahas dalam periode ini.")
+                else:
+                    insights.append("Tidak ada kata kunci yang cukup untuk diidentifikasi.")
+            else:
+                insights.append("Data kata kunci kosong setelah pembersihan.")
+        else:
+            insights.append("Kolom 'Keywords' tidak ditemukan atau kosong untuk analisis kata kunci.")
+
+    elif chart_title == "Tren Sentimen Harian":
+        if 'Date' in df_filtered.columns and 'Sentiment' in df_filtered.columns and \
+           not df_filtered['Date'].isnull().all() and not df_filtered['Sentiment'].isnull().all():
+            df_sentiment_time = df_filtered.copy()
+            df_sentiment_time['Date'] = pd.to_datetime(df_sentiment_time['Date'])
+            df_sentiment_time.set_index('Date', inplace=True)
+            daily_sentiment_summary = df_sentiment_time.groupby(pd.Grouper(freq='D'))['Sentiment_Score'].mean() # Assuming 'Sentiment_Score' exists
+            
+            if not daily_sentiment_summary.empty:
+                max_sentiment_date = daily_sentiment_summary.idxmax()
+                min_sentiment_date = daily_sentiment_summary.idxmin()
+                
+                insights.append(f"Sentimen tertinggi tercatat pada **{max_sentiment_date.strftime('%d %b %Y')}**.")
+                insights.append(f"Sentimen terendah tercatat pada **{min_sentiment_date.strftime('%d %b %Y')}**.")
+                
+                # Simple trend analysis
+                if len(daily_sentiment_summary) > 1:
+                    last_day_sentiment = daily_sentiment_summary.iloc[-1]
+                    prev_day_sentiment = daily_sentiment_summary.iloc[-2] if len(daily_sentiment_summary) > 1 else None
+                    if prev_day_sentiment is not None:
+                        if last_day_sentiment > prev_day_sentiment:
+                            insights.append("Sentimen menunjukkan tren kenaikan dalam beberapa hari terakhir.")
+                        elif last_day_sentiment < prev_day_sentiment:
+                            insights.append("Sentimen menunjukkan tren penurunan dalam beberapa hari terakhir.")
+                        else:
+                            insights.append("Sentimen cenderung stabil dalam beberapa hari terakhir.")
+            else:
+                insights.append("Tidak ada data sentimen yang cukup untuk menganalisis tren harian.")
+        else:
+            insights.append("Kolom 'Date' atau 'Sentiment' tidak ditemukan atau kosong untuk tren sentimen.")
+
+    elif chart_title == "Sentimen Berdasarkan Sumber":
+        if 'Source' in df_filtered.columns and 'Sentiment' in df_filtered.columns and not df_filtered['Source'].isnull().all():
+            source_sentiment_summary = df_filtered.groupby('Source')['Sentiment_Score'].mean().nlargest(3) # Top 3 by avg sentiment
+            source_volume = df_filtered['Source'].value_counts().nlargest(3) # Top 3 by volume
+
+            if not source_sentiment_summary.empty:
+                insights.append("Sumber dengan rata-rata sentimen tertinggi:")
+                for source, score in source_sentiment_summary.items():
+                    insights.append(f"- **{source}** (Sentimen: {score:.2f})")
+            
+            if not source_volume.empty:
+                insights.append("Sumber dengan volume artikel terbanyak:")
+                for source, count in source_volume.items():
+                    insights.append(f"- **{source}** ({count} artikel)")
+
+            if source_sentiment_summary.empty and source_volume.empty:
+                insights.append("Tidak ada data sumber atau sentimen yang cukup untuk analisis.")
+        else:
+            insights.append("Kolom 'Source' atau 'Sentiment' tidak ditemukan atau kosong untuk sentimen berdasarkan sumber.")
+
+    elif chart_title == "Total Jangkauan Harian":
+        if 'Date' in df_filtered.columns and 'Reach' in df_filtered.columns and \
+           not df_filtered['Date'].isnull().all() and not df_filtered['Reach'].isnull().all():
+            df_reach_time = df_filtered.copy()
+            df_reach_time['Date'] = pd.to_datetime(df_reach_time['Date'])
+            df_reach_time.set_index('Date', inplace=True)
+            daily_reach_summary = df_reach_time.resample('D')['Reach'].sum()
+
+            if not daily_reach_summary.empty:
+                max_reach_date = daily_reach_summary.idxmax()
+                insights.append(f"Jangkauan tertinggi tercatat pada **{max_reach_date.strftime('%d %b %Y')}** dengan total **{daily_reach_summary.max():,.0f}**.")
+                
+                # Simple trend analysis for reach
+                if len(daily_reach_summary) > 1:
+                    last_day_reach = daily_reach_summary.iloc[-1]
+                    prev_day_reach = daily_reach_summary.iloc[-2] if len(daily_reach_summary) > 1 else None
+                    if prev_day_reach is not None:
+                        if last_day_reach > prev_day_reach:
+                            insights.append("Jangkauan menunjukkan tren kenaikan dalam beberapa hari terakhir.")
+                        elif last_day_reach < prev_day_reach:
+                            insights.append("Jangkauan menunjukkan tren penurunan dalam beberapa hari terakhir.")
+                        else:
+                            insights.append("Jangkauan cenderung stabil dalam beberapa hari terakhir.")
+            else:
+                insights.append("Tidak ada data jangkauan yang cukup untuk menganalisis tren harian.")
+        else:
+            insights.append("Kolom 'Date' atau 'Reach' tidak ditemukan atau kosong untuk jangkauan harian.")
+
+    # Jika tidak ada insight spesifik, berikan insight umum
+    if not insights:
+        insights.append(f"Tidak ada wawasan spesifik yang tersedia untuk '{chart_title}'.")
+
+    return insights
 
 # --- Streamlit App Configuration ---
 st.set_page_config(
@@ -138,7 +289,7 @@ elif st.session_state.page == 'Upload Data':
 # All analysis consolidated in 'Data Overview' page
 elif st.session_state.page == 'Data Overview':
     st.title("Data Overview: Analisis Media Lengkap")
-    st.info(get_insights("Data Overview"))
+    st.info("Berikut adalah ringkasan dan wawasan utama dari data media Anda.") # Insight umum untuk halaman
 
     # Ensure data is available before proceeding
     if 'df' not in st.session_state or st.session_state.df.empty:
@@ -151,9 +302,10 @@ elif st.session_state.page == 'Data Overview':
         with st.expander("Filter Data"):
             df_filtered = df.copy()
 
+            # Ensure 'Date' column is present and valid for filtering
             if 'Date' in df_filtered.columns:
                 df_filtered['Date'] = pd.to_datetime(df_filtered['Date'], errors='coerce')
-                df_filtered.dropna(subset=['Date'], inplace=True)
+                df_filtered.dropna(subset=['Date'], inplace=True) # Remove rows with invalid dates
 
                 if not df_filtered.empty:
                     min_date_available = df_filtered['Date'].min().date()
@@ -171,12 +323,13 @@ elif st.session_state.page == 'Data Overview':
                         start_date, end_date = date_range
                         df_filtered = df_filtered[(df_filtered['Date'].dt.date >= start_date) & (df_filtered['Date'].dt.date <= end_date)]
                     else:
-                        st.info("Pilih rentang tanggal yang valid.")
+                        st.info("Pilih rentang tanggal yang valid untuk memfilter data.")
                 else:
                     st.warning("Tidak ada data tanggal yang valid setelah pembersihan. Filter tanggal tidak tersedia.")
             else:
                 st.warning("Kolom 'Date' tidak ditemukan dalam data Anda. Filter tanggal tidak tersedia.")
 
+            # Filter for Category
             if 'Category' in df_filtered.columns:
                 categories = df_filtered['Category'].dropna().unique()
                 if len(categories) > 0:
@@ -185,6 +338,7 @@ elif st.session_state.page == 'Data Overview':
                 else:
                     st.info("Tidak ada data kategori yang valid.")
 
+            # Filter for Source
             if 'Source' in df_filtered.columns:
                 sources = df_filtered['Source'].dropna().unique()
                 if len(sources) > 0:
@@ -203,15 +357,29 @@ elif st.session_state.page == 'Data Overview':
             with col1:
                 total_articles = len(df_filtered)
                 st.metric(label="Total Artikel", value=f"{total_articles:,}")
-                st.caption(get_insights("Total Artikel"))
+                # Print insights
+                for insight in get_insights("Total Artikel", df_filtered):
+                    st.caption(insight)
             with col2:
-                avg_sentiment_score = df_filtered['Sentiment_Score'].mean() if 'Sentiment_Score' in df_filtered.columns else 0
-                st.metric(label="Rata-rata Sentimen", value=f"{avg_sentiment_score:.2f}")
-                st.caption(get_insights("Rata-rata Sentimen"))
+                # Check for 'Sentiment_Score' column before calculating mean
+                if 'Sentiment_Score' in df_filtered.columns and not df_filtered['Sentiment_Score'].isnull().all():
+                    avg_sentiment_score = df_filtered['Sentiment_Score'].mean()
+                    st.metric(label="Rata-rata Sentimen", value=f"{avg_sentiment_score:.2f}")
+                else:
+                    st.metric(label="Rata-rata Sentimen", value="N/A")
+                    st.caption("Kolom 'Sentiment_Score' tidak tersedia.")
+                for insight in get_insights("Rata-rata Sentimen", df_filtered):
+                    st.caption(insight)
             with col3:
-                unique_sources = df_filtered['Source'].nunique() if 'Source' in df_filtered.columns else 0
-                st.metric(label="Sumber Unik", value=f"{unique_sources:,}")
-                st.caption(get_insights("Sumber Unik"))
+                # Check for 'Source' column before counting unique
+                if 'Source' in df_filtered.columns and not df_filtered['Source'].isnull().all():
+                    unique_sources = df_filtered['Source'].nunique()
+                    st.metric(label="Sumber Unik", value=f"{unique_sources:,}")
+                else:
+                    st.metric(label="Sumber Unik", value="N/A")
+                    st.caption("Kolom 'Source' tidak tersedia.")
+                for insight in get_insights("Sumber Unik", df_filtered):
+                    st.caption(insight)
 
             st.markdown("---")
 
@@ -235,7 +403,8 @@ elif st.session_state.page == 'Data Overview':
                         legend_title_text='Sentimen', margin=dict(l=20, r=20, t=60, b=20), title_x=0.5
                     )
                     st.plotly_chart(fig_sentiment, use_container_width=True)
-                    st.info(get_insights("Distribusi Sentimen"))
+                    for insight in get_insights("Distribusi Sentimen", df_filtered):
+                        st.info(insight)
                 else:
                     st.warning("Kolom 'Sentiment' tidak ditemukan atau kosong. Distribusi sentimen tidak dapat ditampilkan.")
 
@@ -256,7 +425,8 @@ elif st.session_state.page == 'Data Overview':
                             margin=dict(l=20, r=20, t=60, b=20), title_x=0.5
                         )
                         st.plotly_chart(fig_keywords, use_container_width=True)
-                        st.info(get_insights("Kata Kunci Teratas"))
+                        for insight in get_insights("Kata Kunci Teratas", df_filtered):
+                            st.info(insight)
                     else:
                         st.info("Tidak ada kata kunci yang valid untuk ditampilkan.")
                 else:
@@ -268,6 +438,7 @@ elif st.session_state.page == 'Data Overview':
             col_chart3, col_chart4 = st.columns(2)
             with col_chart3:
                 st.subheader("Tren Sentimen Seiring Waktu")
+                # Need both 'Date' and 'Sentiment'/'Sentiment_Score' for this chart and its insights
                 if 'Date' in df_filtered.columns and 'Sentiment' in df_filtered.columns and \
                    not df_filtered['Date'].isnull().all() and not df_filtered['Sentiment'].isnull().all():
                     df_filtered_sentiment = df_filtered.copy()
@@ -288,14 +459,14 @@ elif st.session_state.page == 'Data Overview':
                         margin=dict(l=20, r=20, t=60, b=20), title_x=0.5
                     )
                     st.plotly_chart(fig_sentiment_time, use_container_width=True)
-                    st.info(get_insights("Tren Sentimen Harian"))
+                    for insight in get_insights("Tren Sentimen Harian", df_filtered):
+                        st.info(insight)
                 else:
                     st.warning("Kolom 'Date' atau 'Sentiment' tidak ditemukan atau kosong. Tren sentimen tidak dapat ditampilkan.")
 
             with col_chart4:
                 st.subheader("Sentimen Berdasarkan Sumber Media")
-                if 'Source' in df_filtered.columns and 'Sentiment' in df_filtered.columns and \
-                   not df_filtered['Source'].isnull().all() and not df_filtered['Sentiment'].isnull().all():
+                if 'Source' in df_filtered.columns and 'Sentiment' in df_filtered.columns and not df_filtered['Source'].isnull().all():
                     source_sentiment = df_filtered.groupby(['Source', 'Sentiment']).size().unstack(fill_value=0)
                     source_sentiment['Total Articles'] = source_sentiment.sum(axis=1)
                     source_sentiment_sorted = source_sentiment.sort_values(by='Total Articles', ascending=False).head(10)
@@ -320,7 +491,8 @@ elif st.session_state.page == 'Data Overview':
                             margin=dict(l=20, r=20, t=60, b=20), title_x=0.5
                         )
                         st.plotly_chart(fig_source, use_container_width=True)
-                        st.info(get_insights("Sentimen Berdasarkan Sumber"))
+                        for insight in get_insights("Sentimen Berdasarkan Sumber", df_filtered):
+                            st.info(insight)
                     else:
                         st.info("Tidak ada data sumber atau sentimen yang cukup untuk membuat visualisasi.")
                 else:
@@ -353,7 +525,8 @@ elif st.session_state.page == 'Data Overview':
                                 margin=dict(l=20, r=20, t=60, b=20), title_x=0.5
                             )
                             st.plotly_chart(fig_reach_time, use_container_width=True)
-                            st.info(get_insights("Total Jangkauan Harian"))
+                            for insight in get_insights("Total Jangkauan Harian", df_filtered):
+                                st.info(insight)
                         else:
                             st.info("Tidak ada data jangkauan yang cukup untuk membuat tren.")
                     else:
@@ -384,7 +557,8 @@ elif st.session_state.page == 'Data Overview':
                                 margin=dict(l=20, r=20, t=60, b=20), title_x=0.5
                             )
                             st.plotly_chart(fig_keyword_trend, use_container_width=True)
-                            st.info(get_insights("Keyword Trends"))
+                            for insight in get_insights("Keyword Trends", df_filtered):
+                                st.info(insight)
                         else:
                             st.info("Tidak cukup data kata kunci untuk membuat tren.")
                     else:
@@ -424,9 +598,9 @@ elif st.session_state.page == 'Help':
         - **Bagaimana cara mengunggah data?**
           Pilih opsi "Upload Data" dari menu sidebar, lalu klik "Pilih file data" untuk memilih file Anda. Anda dapat mengunggah file Excel (.xlsx) atau CSV (.csv).
         - **Format data yang didukung?**
-          Saat ini mendukung file Excel (.xlsx) dan CSV (.csv) dengan kolom yang relevan seperti **'Date'**, **'Headline'**, **'Sentiment'** (e.g., 'Positive', 'Negative', 'Neutral'), **'Keywords'** (comma-separated), **'Source'**, **'Sentiment_Score'** (numeric), dan **'Reach'** (numeric). Pastikan nama kolom Anda sesuai.
+          Saat ini mendukung file Excel (.xlsx) dan CSV (.csv) dengan kolom yang relevan seperti **'Date'** (format tanggal), **'Headline'** (teks), **'Sentiment'** (teks: 'Positive', 'Negative', 'Neutral'), **'Keywords'** (teks, dipisahkan koma seperti "kata1, kata2"), **'Source'** (teks), **'Sentiment_Score'** (numerik, e.g., -1.0 hingga 1.0), dan **'Reach'** (numerik). Pastikan nama kolom Anda sesuai.
         - **Bagaimana cara mendapatkan wawasan dari dashboard?**
-          Setiap visualisasi dilengkapi dengan penjelasan singkat (insights) di bawahnya. Anda juga dapat menggunakan filter di bagian atas halaman analisis untuk mengeksplorasi data lebih dalam.
+          Setiap visualisasi dilengkapi dengan penjelasan singkat (insights) di bawahnya yang dihasilkan secara dinamis berdasarkan data yang difilter. Anda juga dapat menggunakan filter di bagian atas halaman analisis untuk mengeksplorasi data lebih dalam.
         ---
         Kontak Dukungan: support@example.com
     """)
