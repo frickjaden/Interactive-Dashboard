@@ -37,12 +37,12 @@ def get_insights(chart_title, df_filtered=None):
 
             insights.append(f"Tren engagement menunjukkan puncaknya pada minggu yang dimulai **{max_engagement_date.strftime('%d %b %Y')}**, menunjukkan waktu yang efektif untuk aktivitas kampanye tertentu.")
             insights.append(f"Terjadi penurunan engagement pada minggu yang dimulai **{min_engagement_date.strftime('%d %b %Y')}**, perlu diinvestigasi faktor penyebab seperti perubahan strategi, konten, atau kejadian eksternal.")
-            insights.append(f"Total engagement dalam periode ini adalah **{total_engagements:,.0f}**. Fluktuasi engagement menunjukkan pentingnya konsistensi dalam produksi konten dan strategi interaksi.")
+            insights.append(f"Total engagement dalam periode ini adalah **{total_engagements:,.0f}**. Fluktuasi engagement menunjukkan pentingnya konsistensi dalam produksi konten dan interaksi yang relevan.")
         else:
             insights.append("Data tren engagement tidak cukup untuk analisis.")
 
     elif chart_title == "Platform Engagements":
-        platform_engagements = df_filtered.groupby('platform')['engagements'].sum().sort_values(ascending=False).reset_index()
+        platform_engagements = df_filtered.groupby('platform')['engagements'].sum().sort_values(ascending=True).reset_index() # Ascending for better bar order
         if not platform_engagements.empty:
             top_platform = platform_engagements.iloc[0]
             insights.append(f"**{top_platform['platform']}** adalah platform dengan engagement tertinggi ({top_platform['engagements']:,.0f}), menjadikannya saluran paling efektif untuk kampanye ini.")
@@ -75,7 +75,7 @@ def get_insights(chart_title, df_filtered=None):
             insights.append("Data tipe media tidak cukup untuk analisis.")
 
     elif chart_title == "Top 5 Locations":
-        top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).reset_index()
+        top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).sort_values(ascending=True).reset_index()
         if not top_locations.empty:
             top1_loc = top_locations.iloc[0]
             insights.append(f"**{top1_loc['location']}** adalah lokasi dengan engagement tertinggi ({top1_loc['engagements']:,.0f}), ini adalah pasar utama yang harus terus ditargetkan dengan kuat.")
@@ -218,13 +218,13 @@ if uploaded_file is not None:
                 selected_locations = st.multiselect("Pilih Lokasi(s)", unique_locations, default=['Semua'])
 
                 # Date Range Filter
-                min_date = df['date'].min().date()
-                max_date = df['date'].max().date()
+                min_date_df = df['date'].min().date()
+                max_date_df = df['date'].max().date()
                 date_range_values = st.date_input(
                     "Pilih Rentang Tanggal",
-                    value=(min_date, max_date),
-                    min_value=min_date,
-                    max_value=max_date
+                    value=(min_date_df, max_date_df),
+                    min_value=min_date_df,
+                    max_value=max_date_df
                 )
                 start_date_filter = date_range_values[0]
                 end_date_filter = date_range_values[1] if len(date_range_values) > 1 else date_range_values[0]
@@ -315,7 +315,7 @@ if uploaded_file is not None:
                 st.markdown("---") # Separator
 
                 # --- Row 3: Top 5 Locations ---
-                st.subheader("3.5. Bar Chart: Top 5 Locations by Engagement")
+                st.subheader("3.5. Top 5 Locations by Engagement")
                 top_locations = df_filtered.groupby('location')['engagements'].sum().nlargest(5).sort_values(ascending=True).reset_index()
                 fig_locations = px.bar(top_locations, x='engagements', y='location', orientation='h',
                                       title='**Top 5 Lokasi Berdasarkan Total Engagement**',
